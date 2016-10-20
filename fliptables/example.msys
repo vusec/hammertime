@@ -1,0 +1,8 @@
+# Lines starting with a hash are comments
+# Empty lines are ignored; # inline comments are NOT possible
+
+cntrl intel_haswell
+route x86_generic
+remap none
+route_opts 3,3214934016,8589934592
+rank
