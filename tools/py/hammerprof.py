@@ -25,7 +25,7 @@ import struct
 from collections import namedtuple
 from collections import OrderedDict
 
-ROW_FMT = r'\((\w+) (\w+) (\w+) (\w+) (\w+)\)'
+ROW_FMT = r'\((\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\)'
 ROW_RE = re.compile(ROW_FMT)
 BFLIP_FMT = r'(\w{4})\|(\w{2})\|(\w{2})'
 BFLIP_RE = re.compile(BFLIP_FMT)
