@@ -26,7 +26,7 @@ all: default demo
 demo: demo.c $(obj_files) $(build_subdirs) fliptables
 	$(CC) $(DEMOCFLAGS) -o $@ $< $(obj_files) $(demo_objs) $(DEMOLFLAGS)
 
-.PHONY: clean $(build_subdirs) $(extra_subdirs)
+.PHONY: clean cleanall $(build_subdirs) $(extra_subdirs)
 
 probes: perfev-util
 
@@ -43,5 +43,8 @@ fliptables:
 	@$(MAKE) -C $@
 
 clean:
-	@for d in $(build_subdirs) $(extra_subdirs); do $(MAKE) -C $$d clean; done
+	@for d in $(build_subdirs) ramses tools; do $(MAKE) -C $$d clean; done
 	rm -f $(obj_files) demo
+
+cleanall: clean
+	@$(MAKE) -C fliptables clean
