@@ -110,8 +110,8 @@ def _x86_smm_ask():
     return _X86_SMM(remap, hasme, pci_start, topmem)
 
 def _x86_geom_guess():
-    r = subprocess.run(['dmidecode', '-t', 'memory'], stdout=subprocess.PIPE)
-    dmi = r.stdout.decode('ascii').split('\n')
+    r = subprocess.check_output(['dmidecode', '-t', 'memory'])
+    dmi = r.decode('ascii').split('\n')
     sizes = [x.strip().split(': ') for x in dmi if 'Size' in x]
     used = [x[1] != 'No Module Installed' for x in sizes]
     nused = sum(used)
