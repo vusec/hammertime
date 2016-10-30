@@ -76,6 +76,10 @@ static int decode(void *state, void *record,
 {
 	struct probe_state *s = (struct probe_state *)state;
 	struct perf_record_sample *pr = (struct perf_record_sample *)record;
+	/* Ignore NULLs */
+	if (!pr->addr) {
+		return 1;
+	}
 	/* Don't monitor self */
 	if (pr->pid == s->self) {
 		return 1;

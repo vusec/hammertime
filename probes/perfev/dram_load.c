@@ -69,6 +69,10 @@ static int decode(void *state, void *record,
 {
 	struct probe_state *s = (struct probe_state *)state;
 	struct perf_record_sample *pr = (struct perf_record_sample *)record;
+	/* Ignore NULLs */
+	if (!pr->addr) {
+		return 1;
+	}
 	//~ *pa = ramses_translate_pagemap(pr->addr, s->pmap_fd);
 	uint64_t vpfn = pr->addr >> 12;
 	uintptr_t voff = pr->addr & 0xfff;
