@@ -1,13 +1,16 @@
 libname := ramses
 arname := lib$(libname).a
+soname := lib$(libname).so
+abi := 0
 
 CC := gcc
 CFLAGS := -std=gnu99 -Wall -Wpedantic -O2 -fPIC -Iinclude
+LDFLAGS := -shared -Wl,-soname,$(soname).$(abi)
 
 obj_files := $(patsubst %.c,%.o,$(wildcard *.c))
 extra_headers := bitops.h include/$(libname)/types.h include/$(libname)/util.h include/$(libname)/vtlbucket.h
 
-all: $(arname)
+all: $(arname) $(soname)
 
 # Override built-in compile rule
 %.o: %.c
@@ -24,8 +27,13 @@ all: $(arname)
 $(arname): $(obj_files)
 	ar -rcs $@ $?
 
+# Dynamic lib
+$(soname): $(obj_files)
+	$(CC) $(LDFLAGS) -o $@.$(abi) $^
+	ln -sf $@.$(abi) $@
+
 .PHONY: clean
 
 clean:
-	rm -f $(arname) $(obj_files)
-	rm -rf tools/__pycache__
+	rm -f $(arname) $(soname) $(obj_files)
+	rm -rf tools/__pycache__ pyramses/__pycache__

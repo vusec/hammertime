@@ -90,7 +90,7 @@ enum MemController {
 #define MEMGEOM_DIMMSELECT	2 /* 'Two dimms per channel' */
 #define MEMGEOM_CHANSELECT	4 /* 'Two channels per controller' */
 
-struct DRAMAddr ramses_map_addr(enum MemController c, memaddr_t addr, int geom_flags, const void *opts);
+struct DRAMAddr ramses_map(enum MemController c, memaddr_t addr, int geom_flags, const void *opts);
 memaddr_t ramses_map_reverse(enum MemController c, struct DRAMAddr addr, int geom_flags, const void *opts);
 
 memaddr_t ramses_map_granularity(enum MemController c, int geom_flags, const void *opts);

@@ -93,7 +93,7 @@ int main(int argc, char *argv[], char *envp[])
 		//~ return 1;
 	//~ }
 	FILE *mfile = fopen(MSYS_PATH, "r");
-	if (ramses_load_memsys(mfile, &msys, stderr)) {
+	if (ramses_memsys_load_file(mfile, &msys, stderr)) {
 		perror("Memsys setup error; errno");
 		return 1;
 	}

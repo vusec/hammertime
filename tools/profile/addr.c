@@ -98,8 +98,8 @@ size_t setup_targets(struct AddrEntry **targets, const void *targetbuf, size_t l
 				(*targets)[ti].len = granularity;
 				(*targets)[ti].dramaddr = ramses_remap(
 					msys->dimm_remap,
-					ramses_map_addr(msys->controller, curaddr + off,
-				                    msys->mem_geometry,msys->controller_opts)
+					ramses_map(msys->controller, curaddr + off,
+				               msys->mem_geometry,msys->controller_opts)
 				);
 #ifdef ADDR_DEBUG
 				(*targets)[ti].physaddr = pfns[pfn_order[i]] + off;
@@ -118,8 +118,8 @@ size_t setup_targets(struct AddrEntry **targets, const void *targetbuf, size_t l
 		(*targets)[0].len = PAGE_SIZE;
 		(*targets)[0].dramaddr = ramses_remap(
 			msys->dimm_remap,
-			ramses_map_addr(msys->controller, ramaddrs[pfn_order[0]],
-		                    msys->mem_geometry, msys->controller_opts)
+			ramses_map(msys->controller, ramaddrs[pfn_order[0]],
+		               msys->mem_geometry, msys->controller_opts)
 		);
 		prev_ramaddr = ramaddrs[pfn_order[0]];
 #ifdef ADDR_DEBUG
@@ -140,8 +140,8 @@ size_t setup_targets(struct AddrEntry **targets, const void *targetbuf, size_t l
 				(*targets)[ti].len = PAGE_SIZE;
 				(*targets)[ti].dramaddr = ramses_remap(
 					msys->dimm_remap,
-					ramses_map_addr(msys->controller, curaddr,
-				                    msys->mem_geometry, msys->controller_opts)
+					ramses_map(msys->controller, curaddr,
+				               msys->mem_geometry, msys->controller_opts)
 				);
 #ifdef ADDR_DEBUG
 				(*targets)[ti].physaddr = pfns[pfn_order[i]];

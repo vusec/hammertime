@@ -35,15 +35,23 @@ struct MemorySystem {
 };
 
 /* Sets up a basic x86 memory system with PCI hole remapping enabled */
-int ramses_setup_x86_memsys(enum MemController ctrl, int geom_flags, void *ctrlopt,
-                           memaddr_t ramsize, physaddr_t pcistart, int intelme,
-                           enum DIMMRemap remap, struct MemorySystem *output);
+int ramses_memsys_setup_x86(enum MemController ctrl, int geom_flags, void *ctrlopt,
+                            memaddr_t ramsize, physaddr_t pcistart, int intelme,
+                            enum DIMMRemap remap, struct MemorySystem *output);
 
 /* Load a memory system from stream f.
  * err, if not NULL, will be used to print detailed error messages to.
  * File format is the one output by tools/msys_detect.py
  */
-int ramses_load_memsys(FILE *f, struct MemorySystem *output, FILE *err);
+int ramses_memsys_load_file(FILE *f, struct MemorySystem *output, FILE *err);
+
+/* Load a memory system from string str.
+ * Otherwise identical to ramses_memsys_load_file
+ */
+int ramses_memsys_load_str(char *s, size_t slen, struct MemorySystem *output, FILE *err);
+
+/* Frees any buffers potentially allocated by ramses_memsys_* functions. */
+void ramses_memsys_free(struct MemorySystem *s);
 
 struct DRAMAddr ramses_resolve(struct MemorySystem *s, physaddr_t addr);
 physaddr_t ramses_resolve_reverse(struct MemorySystem *s, struct DRAMAddr addr);

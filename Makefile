@@ -3,9 +3,9 @@ RAMSES_PATH := ./ramses
 CC := gcc
 CFLAGS := -std=gnu99 -Wall -Wpedantic -O2 -I$(RAMSES_PATH)/include
 DEMOCFLAGS := $(CFLAGS) -pthread
-DEMOLFLAGS := -L$(RAMSES_PATH) -L./perfev-util -lramses -lperfev-util -lpfm
+DEMOLFLAGS := -L./perfev-util -lperfev-util -lpfm
 
-demo_objs := predictors/*.o probes/perfev/*.o
+demo_objs := predictors/*.o probes/perfev/*.o $(RAMSES_PATH)/libramses.a
 
 obj_files := $(filter-out demo.o, $(patsubst %.c,%.o,$(wildcard *.c)))
 

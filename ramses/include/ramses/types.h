@@ -30,7 +30,7 @@ typedef uint64_t memaddr_t; /* System memory addresses; this is what the memory 
 #define RAMSES_BADADDR ((physaddr_t)-1)
 
 struct DRAMAddr {
-	uint8_t channel;
+	uint8_t chan;
 	uint8_t dimm;
 	uint8_t rank;
 	uint8_t bank;

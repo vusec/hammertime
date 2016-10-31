@@ -95,7 +95,7 @@ physaddr_t ramses_route_reverse(enum PhysAddrRouter r, memaddr_t addr, const str
 static struct DRAMAddr map_naive_ddr3(memaddr_t addr, int geom_flags, const void *opts)
 {
 	struct DRAMAddr retval = {
-		.channel = 0,
+		.chan = 0,
 		.dimm = 0,
 		.rank = 0,
 		.col = (addr >> 3) & LS_BITMASK(10),
@@ -114,7 +114,7 @@ static memaddr_t map_reverse_naive_ddr3(struct DRAMAddr addr, int geom_flags, co
 static struct DRAMAddr map_naive_ddr4(memaddr_t addr, int geom_flags, const void *opts)
 {
 	struct DRAMAddr retval = {
-		.channel = 0,
+		.chan = 0,
 		.dimm = 0,
 		.rank = 0,
 		.col = (addr >> 3) & LS_BITMASK(10),
@@ -141,7 +141,7 @@ static struct DRAMAddr map_sandy(memaddr_t addr, int geom_flags, const void *opt
 	if (geom_flags & MEMGEOM_CHANSELECT) {
 		retval.col = addr & LS_BITMASK(3);
 		addr >>= 3;
-		retval.channel = BIT(0,addr);
+		retval.chan = BIT(0,addr);
 		addr >>= 1;
 		retval.col += (addr & LS_BITMASK(7)) << 3;
 		addr >>= 7;
@@ -194,7 +194,7 @@ static memaddr_t map_reverse_sandy(struct DRAMAddr addr, int geom_flags, const v
 		retval <<= 7;
 		retval |= (addr.col >> 3) & LS_BITMASK(7);
 		retval <<= 1;
-		retval |= addr.channel & 1;
+		retval |= addr.chan & 1;
 		retval <<= 3;
 		retval |= addr.col & LS_BITMASK(3);
 	} else {
@@ -218,8 +218,8 @@ static struct DRAMAddr map_ivyhaswell(memaddr_t addr, int geom_flags, const void
 	if (geom_flags & MEMGEOM_CHANSELECT) {
 		retval.col = addr & LS_BITMASK(4);
 		addr >>= 4;
-		retval.channel = BIT(0,addr) ^ BIT(1,addr) ^ BIT(2,addr) ^ BIT(5,addr) ^ BIT(6,addr) ^
-						 BIT(11,addr) ^ BIT(12,addr);
+		retval.chan = BIT(0,addr) ^ BIT(1,addr) ^ BIT(2,addr) ^ BIT(5,addr) ^
+					  BIT(6,addr) ^ BIT(11,addr) ^ BIT(12,addr);
 		addr >>= 1;
 		retval.col += (addr & LS_BITMASK(6)) << 4;
 		addr >>= 6;
@@ -280,7 +280,7 @@ static memaddr_t map_reverse_ivyhaswell(struct DRAMAddr addr, int geom_flags, co
 		retval <<= 6;
 		retval |= (addr.col >> 4) & LS_BITMASK(6);
 		retval <<= 1;
-		retval |= addr.channel & 1;
+		retval |= addr.chan & 1;
 		retval <<= 4;
 		retval |= addr.col & LS_BITMASK(3);
 	} else {
@@ -308,7 +308,7 @@ memaddr_t (*const map_reverse_funcs[])(struct DRAMAddr addr, int geom_flags, con
 	//~ [MEMCTRL_INTEL_SKYLAKE_DDR4] = NULL,
 };
 
-struct DRAMAddr ramses_map_addr(enum MemController c, memaddr_t addr, int geom_flags, const void *opts)
+struct DRAMAddr ramses_map(enum MemController c, memaddr_t addr, int geom_flags, const void *opts)
 {
 	return map_funcs[c](addr, geom_flags, opts);
 }

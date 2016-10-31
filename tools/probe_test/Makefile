@@ -14,8 +14,8 @@ all: probe_test
 	$(CC) $(CFLAGS) -c $<
 
 probe_test: probe_test.o probe_logger.o
-	$(CC) $(CFLAGS) -o $@ -L$(RAMSES_PATH) -L$(peutil_path) \
-	$^ $(hammtime_path)/probes/perfev/*.o -lramses -lperfev-util -lpfm
+	$(CC) $(CFLAGS) -o $@ -L$(peutil_path) \
+	$^ $(hammtime_path)/probes/perfev/*.o $(RAMSES_PATH)/libramses.a -lperfev-util -lpfm
 
 .PHONY: clean cap
 

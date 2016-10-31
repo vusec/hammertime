@@ -172,9 +172,9 @@ static void print_entry(FILE *f, struct AddrEntry ent, const char *trail)
 	struct DRAMAddr da = ent.dramaddr;
 	if (VERBOSITY & V_DEBUG) {
 		fprintf(f, "%lx %lx (%1x %1x %1x %1x %4x) ", ent.virtp, ent.len,
-											 da.channel, da.dimm,  da.rank, da.bank, da.row);
+											 da.chan, da.dimm,  da.rank, da.bank, da.row);
 	} else {
-		fprintf(f, "(%1x %1x %1x %1x %4x) ", da.channel, da.dimm, da.rank, da.bank, da.row);
+		fprintf(f, "(%1x %1x %1x %1x %4x) ", da.chan, da.dimm, da.rank, da.bank, da.row);
 	}
 	if (trail) {
 		fputs(trail, f);
@@ -566,7 +566,7 @@ static int run_profile(struct HammerCtx *ctx)
 	size_t idx1, idx2, boundary;
 	idx1 = idx2 = boundary = ctx->tcount;
 
-	bool dualchan = (ctx->targets[0].dramaddr.channel != ctx->targets[ctx->tcount - 1].dramaddr.channel &&
+	bool dualchan = (ctx->targets[0].dramaddr.chan != ctx->targets[ctx->tcount - 1].dramaddr.chan &&
 					 (ctx->hammer_opts & HAM_OPT_DUALCHANNEL));
 
 	struct HamQueue *q1, *q2 = NULL;
@@ -591,7 +591,7 @@ static int run_profile(struct HammerCtx *ctx)
 	if (dualchan) {
 		/* Find channel boundary */
 		for (boundary = ctx->tcount / 2;
-			 ctx->targets[boundary].dramaddr.channel != ctx->targets[0].dramaddr.channel;
+			 ctx->targets[boundary].dramaddr.chan != ctx->targets[0].dramaddr.chan;
 			 boundary--);
 		boundary = next_row_entry_idx(ctx, boundary);
 		idx2 = next_row_entry_idx(ctx, boundary);
@@ -981,7 +981,7 @@ int main(int argc, char *argv[])
 				goto err_usage;
 			}
 		}
-		if (ramses_load_memsys(msysf, &msys, stderr)) {
+		if (ramses_memsys_load_file(msysf, &msys, stderr)) {
 			fprintf(stderr, "Error loading msys\n");
 			goto err_usage;
 		}

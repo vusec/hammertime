@@ -1,12 +1,10 @@
 RAMSES_PATH := ../../ramses
 
+CC := gcc
 CFLAGS := -std=gnu99 -Wall -I$(RAMSES_PATH)/include
 OFLAGS := -O3 -finline-functions
 
-LIBS := -L$(RAMSES_PATH) -lramses
-
-DOTOBUILD = gcc $(CFLAGS) $(OFLAGS) -c $<
-LINKBUILD = gcc $(OFLAGS) -o $@ $^ $(LIBS)
+DOTOBUILD = $(CC) $(CFLAGS) $(OFLAGS) -c $<
 
 all: profile
 
@@ -21,7 +19,7 @@ main.o: main.c hammer.h addr.h
 
 
 profile: main.o addr.o hammer.o
-	$(LINKBUILD) -pthread
+	$(CC) $(OFLAGS) -o $@ $^ $(RAMSES_PATH)/libramses.a -pthread
 
 
 .PHONY: clean cap

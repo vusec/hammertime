@@ -92,8 +92,49 @@ static int handle_routeopt(char *s, struct MemorySystem *o)
 	return 0;
 }
 
+static int handle_line(char *line, ssize_t llen, struct MemorySystem *output, FILE *err)
+{
+	if (llen <= 1 || line[0] == '#') {
+		return 0;
+	}
+	char cmd[llen];
+	char arg[llen];
+	sscanf(line, "%s %s", cmd, arg);
+	if (strcmp("cntrl", cmd) == 0) {
+		if (handle_cntrl(arg, output)) {
+			if (err) fprintf(err, "Controller error: `%s'\n", arg);
+			return 1;
+		}
+	} else if (strcmp("route", cmd) == 0) {
+		if (handle_route(arg, output)) {
+			if (err) fprintf(err, "Route error: `%s'\n", arg);
+			return 2;
+		}
+	} else if (strcmp("remap", cmd) == 0) {
+		if (handle_remap(arg, output)) {
+			if (err) fprintf(err, "Remap error: `%s'\n", arg);
+			return 4;
+		}
+	} else if (strcmp("route_opts", cmd) == 0) {
+		if (handle_routeopt(arg, output)) {
+			if (err) fprintf(err, "Route options error: `%s'\n", arg);
+			return 8;
+		}
+	} else if (strcmp("chan", cmd) == 0) {
+		output->mem_geometry |= MEMGEOM_CHANSELECT;
+	} else if (strcmp("dimm", cmd) == 0) {
+		output->mem_geometry |= MEMGEOM_DIMMSELECT;
+	} else if (strcmp("rank", cmd) == 0) {
+		output->mem_geometry |= MEMGEOM_RANKSELECT;
+	} else {
+		if (err) fprintf(err, "Unknown command: `%s'\n", cmd);
+		return 16;
+	}
+	return 0;
+}
 
-int ramses_load_memsys(FILE *f, struct MemorySystem *output, FILE *err)
+
+int ramses_memsys_load_file(FILE *f, struct MemorySystem *output, FILE *err)
 {
 	char *line = NULL;
 	size_t lblen = 0;
@@ -102,49 +143,40 @@ int ramses_load_memsys(FILE *f, struct MemorySystem *output, FILE *err)
 
 	memset(output, 0, sizeof(*output));
 	while ((llen = getline(&line, &lblen, f)) != -1) {
-		if (llen <= 1 || line[0] == '#') {
-			continue;
-		}
-		char cmd[llen];
-		char arg[llen];
-		sscanf(line, "%s %s", cmd, arg);
-		if (strcmp("cntrl", cmd) == 0) {
-			if (handle_cntrl(arg, output)) {
-				if (err) fprintf(err, "Controller error: `%s'\n", arg);
-				ret |= 1;
-			}
-		} else if (strcmp("route", cmd) == 0) {
-			if (handle_route(arg, output)) {
-				if (err) fprintf(err, "Route error: `%s'\n", arg);
-				ret |= 2;
-			}
-		} else if (strcmp("remap", cmd) == 0) {
-			if (handle_remap(arg, output)) {
-				if (err) fprintf(err, "Remap error: `%s'\n", arg);
-				ret |= 4;
-			}
-		} else if (strcmp("route_opts", cmd) == 0) {
-			if (handle_routeopt(arg, output)) {
-				if (err) fprintf(err, "Route options error: `%s'\n", arg);
-				ret |= 8;
-			}
-		} else if (strcmp("chan", cmd) == 0) {
-			output->mem_geometry |= MEMGEOM_CHANSELECT;
-		} else if (strcmp("dimm", cmd) == 0) {
-			output->mem_geometry |= MEMGEOM_DIMMSELECT;
-		} else if (strcmp("rank", cmd) == 0) {
-			output->mem_geometry |= MEMGEOM_RANKSELECT;
-		} else {
-			if (err) fprintf(err, "Unknown command: `%s'\n", cmd);
-			ret |= 16;
-		}
+		ret |= handle_line(line, llen, output, err);
 	}
 	return ret;
 }
 
-int ramses_setup_x86_memsys(enum MemController ctrl, int geom_flags, void *ctrlopt,
-                           memaddr_t ramsize, physaddr_t pcistart, int intelme,
-                           enum DIMMRemap remap, struct MemorySystem *out)
+int ramses_memsys_load_str(char *s, size_t slen, struct MemorySystem *output, FILE *err)
+{
+	int ret = 0;
+	char *line, *ptr;
+	char sb[slen + 1];
+	strncpy(sb, s, slen);
+	sb[slen] = '\0';
+
+	memset(output, 0, sizeof(*output));
+	line = strtok_r(sb, "\n", &ptr);
+	do {
+		//~ printf("%s\n", line);
+		ret |= handle_line(line, ptr - line - 1, output, err);
+		line = strtok_r(NULL, "\n", &ptr);
+	} while (line);
+	return ret;
+}
+
+void ramses_memsys_free(struct MemorySystem *s)
+{
+	if (s->route_opts)
+		free(s->route_opts);
+	if (s->controller_opts)
+		free(s->controller_opts);
+}
+
+int ramses_memsys_setup_x86(enum MemController ctrl, int geom_flags, void *ctrlopt,
+                            memaddr_t ramsize, physaddr_t pcistart, int intelme,
+                            enum DIMMRemap remap, struct MemorySystem *out)
 {
 	if (ramsize <= ramses_max_memory(ctrl, geom_flags, ctrlopt)) {
 		/* RAM "fits" inside the geometry */
@@ -173,7 +205,7 @@ struct DRAMAddr ramses_resolve(struct MemorySystem *s, physaddr_t addr)
 	return (
 		ramses_remap(
 			s->dimm_remap,
-			ramses_map_addr(
+			ramses_map(
 				s->controller,
 				ramses_route(s->router, addr, s->route_opts),
 				s->mem_geometry,

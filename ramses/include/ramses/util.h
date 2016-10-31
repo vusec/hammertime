@@ -27,9 +27,9 @@
 
 static inline int ramses_dramaddr_cmp(struct DRAMAddr a, struct DRAMAddr b)
 {
-	int64_t amag = ((int64_t)a.channel << 56) + ((int64_t)a.dimm << 48) + ((int64_t)a.rank << 40) +
+	int64_t amag = ((int64_t)a.chan << 56) + ((int64_t)a.dimm << 48) + ((int64_t)a.rank << 40) +
 	               ((int64_t)a.bank << 32) + ((int64_t)a.row << 16) + a.col;
-	int64_t bmag = ((int64_t)b.channel << 56) + ((int64_t)b.dimm << 48) + ((int64_t)b.rank << 40) +
+	int64_t bmag = ((int64_t)b.chan << 56) + ((int64_t)b.dimm << 48) + ((int64_t)b.rank << 40) +
 	               ((int64_t)b.bank << 32) + ((int64_t)b.row << 16) + b.col;
 	int64_t d = amag - bmag;
 	return d ? ((d > 0) ? 1 : -1) : 0;
@@ -38,7 +38,7 @@ static inline int ramses_dramaddr_cmp(struct DRAMAddr a, struct DRAMAddr b)
 static inline bool ramses_same_bank(struct DRAMAddr a, struct DRAMAddr b)
 {
 	return (
-		a.channel == b.channel &&
+		a.chan == b.chan &&
 		a.dimm == b.dimm &&
 		a.rank == b.rank &&
 		a.bank == b.bank
@@ -58,7 +58,7 @@ static inline bool ramses_succ_rows(struct DRAMAddr a, struct DRAMAddr b)
 static inline struct DRAMAddr ramses_dramaddr_diff(struct DRAMAddr a, struct DRAMAddr b)
 {
 	struct DRAMAddr ret = {
-		.channel = a.channel - b.channel,
+		.chan = a.chan - b.chan,
 		.dimm = a.dimm - b.dimm,
 		.rank = a.rank - b.rank,
 		.bank = a.bank - b.bank,
@@ -71,7 +71,7 @@ static inline struct DRAMAddr ramses_dramaddr_diff(struct DRAMAddr a, struct DRA
 static inline struct DRAMAddr ramses_dramaddr_add(struct DRAMAddr a, struct DRAMAddr b)
 {
 	struct DRAMAddr ret = {
-		.channel = a.channel + b.channel,
+		.chan = a.chan + b.chan,
 		.dimm = a.dimm + b.dimm,
 		.rank = a.rank + b.rank,
 		.bank = a.bank + b.bank,
@@ -89,7 +89,7 @@ static inline int ramses_dramaddr_rowdiff(struct DRAMAddr a, struct DRAMAddr b)
 static inline struct DRAMAddr ramses_dramaddr_addrows(struct DRAMAddr a, int rd)
 {
 	struct DRAMAddr ret = {
-		.channel = a.channel,
+		.chan = a.chan,
 		.dimm = a.dimm,
 		.rank = a.rank,
 		.bank = a.bank,
