@@ -9,7 +9,7 @@ demo_objs := predictors/*.o probes/perfev/*.o $(RAMSES_PATH)/libramses.a
 
 obj_files := $(filter-out demo.o, $(patsubst %.c,%.o,$(wildcard *.c)))
 
-build_subdirs := perfev-util predictors probes
+build_subdirs := perfev-util predictors probes py/pyramses
 extra_subdirs := ramses tools fliptables
 
 build_files := $(obj_files) $(build_subdirs) ramses tools

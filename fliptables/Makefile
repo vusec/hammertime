@@ -1,4 +1,4 @@
-PROF2TBL := ../tools/py/hammerprof.py
+PROF2TBL := ../py/hammerprof.py
 
 tbl_files := $(patsubst %.res,%.fliptbl,$(wildcard */*.res) $(wildcard *.res))
 

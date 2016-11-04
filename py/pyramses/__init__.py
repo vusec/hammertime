@@ -38,7 +38,38 @@ class DRAMAddr(ctypes.Structure):
         return '({0.chan:1x} {0.dimm:1x} {0.rank:1x} {0.bank:1x} {0.row:4x} {0.col:3x})'.format(self)
 
     def __repr__(self):
-        return '{0}({1.chan}, {1.dimm}, {1.rank}, {1.bank}, {1.row}, {1.col})'.format(self.__class__.__name__, self)
+        return '{0}({1.chan}, {1.dimm}, {1.rank}, {1.bank}, {1.row}, {1.col})'.format(type(self).__name__, self)
+
+    def __eq__(self, other):
+        return self.same_bank(other) and self.row == other.row and self.col == other.col
+
+    def __hash__(self):
+        return (self.col + self.row << 16 + self.bank << 32 +
+                self.rank << 40 + self.dimm << 48 + self.chan << 52)
+
+    def __len__(self):
+        return len(self._fields_)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return getattr(self, self._fields_[key][0])
+        elif isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else len(self._fields_)
+            step = key.step if key.step is not None else 1
+            return tuple(getattr(self, self._fields_[k][0]) for k in range(start, stop, step))
+        else:
+            raise TypeError('{} object cannot be indexed by {}'.format(type(self).__name__, type(key).__name__))
+
+    def same_bank(self, other):
+        return (self.chan == other.chan and self.dimm == other.dimm and
+                self.rank == other.rank and self.bank == other.bank)
+
+    def add_offset(self, off):
+        return type(self)(self.chan, self.dimm, self.rank, self.bank, self.row, self.col + off//8)
+
+    def add_row(self, roff):
+        return type(self)(self.chan, self.dimm, self.rank, self.bank, self.row + roff, self.col)
 
 
 class MemorySystem(ctypes.Structure):

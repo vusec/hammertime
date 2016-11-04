@@ -17,8 +17,8 @@ While still a work in progress, the following components make up Hammertime:
 For more information, check out its own README file under `tools/profile/README`.
 **NOTE:** this tool is still an experimental bundle of spaghetti code which will get rewritten at some point.
 Therefore do not consider any part of it a stable API until this notice is removed.
-	* `tools/py/prettyprofile.py` converts a `profile` output into something more human-friendly.
-	* `tools/py/hammerprof.py` converts a `profile` output into a fliptable.
+	* `py/prettyprofile.py` converts a `profile` output into something more human-friendly.
+	* `py/hammerprof.py` converts a `profile` output into a fliptable.
 	* `ramses/tools/msys_detect.py` interactive tool for detecting current system memory configuration.
 
 For an in-depth view of how these components fit together and the overall architecture of Hammertime check out `DESIGN.md` and browse the source code.
@@ -49,7 +49,7 @@ In addition `tools/profile` is a powerful rowhammer testing and profiling tool.
 * Linux kernel >= 3.18
 * `glibc` with pthread support
 * `libpfm4`
-* Python 3 --- used by tools
+* Python >= 3.2 --- used by tools
 
 #### Building ####
 
@@ -59,7 +59,9 @@ Run `make` in the root directory to build all Hammertime components and tools, e
 
 `make all` will build everything there is to build.
 
-`make clean` removes all previously built files.
+`make clean` removes all previously built files except for fliptables.
+
+`make cleanall` removes *all* built files.
 
 ### Getting started ###
 
@@ -68,7 +70,7 @@ Run `make` in the root directory to build all Hammertime components and tools, e
 A memory configuration (i.e. `.msys`) file includes information about the memory controller, physical address router, DRAM geometry and optional on-chip remapping.
 Figuring these out by hand is tedious; here's where a tool comes in.
 
-Run `ramses/tools/msys_detect.py`.
+Run `ramses/tools/msys_detect.py`, ideally as a superuser.
 It will try to auto-detect most parameters and ask you for the others.
 
 The output file it produces can now be used by other Hammertime components.
@@ -86,13 +88,13 @@ will run a basic double-sided rowhammer attack over 256MiB of RAM using `spam.ms
 
 The output may seem a bit cryptic. To remedy this, use the prettifying script:
 
-`tools/profile/profile -s 256m spam.msys | tools/py/prettyprofile.py -`
+`tools/profile/profile -s 256m spam.msys | py/prettyprofile.py -`
 
 as a shell pipeline or
 
 ```
 tools/profile/profile -s 256m spam.msys myprof.res
-tools/py/prettyprofile.py myprof.res
+py/prettyprofile.py myprof.res
 ```
 
 by using a temporary file (the `.res` extension stands for "result"; it's the default one expected by the fliptable build system. More on that later)
@@ -121,7 +123,7 @@ Rowhammer attack patterns of single-sided, double-sided, adjacent (a.k.a. "ampli
 Say you have found bit flips running `profile` and want to use them with the simulator.
 Simply run
 
-`tools/py/hammerprof.py myprof.res myprof.fliptbl`
+`py/hammerprof.py myprof.res myprof.fliptbl`
 
 to convert the `profile` output `myprof.res` into a binary fliptable.
 
