@@ -20,6 +20,7 @@
 import re
 import os
 import math
+import argparse
 import subprocess
 
 from collections import namedtuple
@@ -54,6 +55,16 @@ def _ask(name, lst):
             return lst[int(inp)]
         except (ValueError, IndexError):
             pass
+
+def _anyint(s):
+    if s.startswith('0x'):
+        return int(s, 16)
+    elif s.startswith('0o'):
+        return int(s, 8)
+    elif s.startswith('0b'):
+        return int(s, 2)
+    else:
+        return int(s)
 
 _X86_SMM = namedtuple('_SMM', ['remap', 'hasME', 'pci_start', 'topmem'])
 _GEOM = namedtuple('_GEOM', ['chans', 'dimms', 'ranks'])
@@ -97,13 +108,13 @@ def _x86_smm_ask():
             break
     while True:
         try:
-            pci_start = int(input('PCI start address: '))
+            pci_start = _anyint(input('PCI start address: '))
             break
         except ValueError:
             pass
     while True:
         try:
-            topmem = int(input('Total memory size: '))
+            topmem = _anyint(input('Total memory size: '))
             break
         except ValueError:
             pass
@@ -200,47 +211,57 @@ class MSYS(namedtuple('MSYS', ['controller', 'router', 'dimm_remap', 'geometry',
 
 
 def _main():
-    if os.geteuid() != 0:
+    parser = argparse.ArgumentParser(description='Detect memory system configuration')
+    parser.add_argument('-i', '--interactive-only', action='store_true',
+                        help='Do not attempt to autodetect anything; configure everything interactively')
+    args = parser.parse_args()
+
+    if os.geteuid() != 0 and not args.interactive_only:
         print("For best autodetection results it's recommended you run this tool as superuser.")
     outpath = './mem.msys'
 
     cntrl = _ask('memory controller', CONTROLLERS)
     route = _ask('physical address router', ROUTERS)
     remap = _ask("on-DIMM remap strategy (if unsure, select 'none')", REMAPS)
-    if 'x86' in route:
-        geom = _x86_geom_guess()
-        smm = _x86_smm_detect()
-    else:
-        geom = _SMM(1, 1, 1)
-        smm = None
 
-    print('Autodetected memory geometry')
-    while True:
-        if geom is not None:
-            print('\t{} active channels\n\t{} DIMMs per channel\n\t{} ranks per DIMM\n'.format(*geom))
+    if not args.interactive_only:
+        if 'x86' in route:
+            geom = _x86_geom_guess()
+            smm = _x86_smm_detect()
+        else:
+            geom = _SMM(1, 1, 1)
+            smm = None
+
+        print('Autodetected memory geometry')
+        while True:
+            if geom is not None:
+                print('\t{} active channels\n\t{} DIMMs per channel\n\t{} ranks per DIMM\n'.format(*geom))
+                ans = input('Is this correct? [Y/n]: ')
+            else:
+                print('Unknown')
+                ans = 'n'
+
+            if ans == '' or ans.lower() == 'y':
+                break
+            elif ans.lower() == 'n':
+                geom = _geom_ask()
+
+        print('Autodetected routing options')
+        while True:
+            if smm is not None:
+                print('PCI IOMEM start: {}; Total installed RAM: {}'.format(hex(smm.pci_start), hex(smm.topmem)))
+                print('PCI memory hole remapping is [{}]'.format('enabled' if smm.remap else 'disabled'))
+                print('Intel ME memory stealing is [{}]'.format('enabled' if smm.hasME else 'disabled'))
+            else:
+                print('None')
             ans = input('Is this correct? [Y/n]: ')
-        else:
-            print('Unknown')
-            ans = 'n'
-
-        if ans == '' or ans.lower() == 'y':
-            break
-        elif ans.lower() == 'n':
-            geom = _geom_ask()
-
-    print('Autodetected routing options')
-    while True:
-        if smm is not None:
-            print('PCI IOMEM start: {}; Total installed RAM: {}'.format(hex(smm.pci_start), hex(smm.topmem)))
-            print('PCI memory hole remapping is [{}]'.format('enabled' if smm.remap else 'disabled'))
-            print('Intel ME memory stealing is [{}]'.format('enabled' if smm.hasME else 'disabled'))
-        else:
-            print('None')
-        ans = input('Is this correct? [Y/n]: ')
-        if ans == '' or ans.lower() == 'y':
-            break
-        elif ans.lower() == 'n':
-            smm = _x86_smm_ask()
+            if ans == '' or ans.lower() == 'y':
+                break
+            elif ans.lower() == 'n':
+                smm = _x86_smm_ask()
+    else:
+        geom = _geom_ask()
+        smm = _x86_smm_ask()
 
     ans = input('Path to write output to [{}]: '.format(outpath))
     if ans:
