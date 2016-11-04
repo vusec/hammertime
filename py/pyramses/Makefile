@@ -4,7 +4,7 @@ RAMSES_LIB = libramses.so
 all: $(RAMSES_LIB)
 
 $(RAMSES_LIB): $(RAMSES_DIR)/$(RAMSES_LIB)
-	ln -s $< $@ || cp $< $@
+	cp $< $@
 
 .PHONY: clean
 
