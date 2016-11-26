@@ -9,4 +9,5 @@ $(RAMSES_LIB): $(RAMSES_DIR)/$(RAMSES_LIB)
 .PHONY: clean
 
 clean:
-	rm $(RAMSES_LIB)
+	rm -f $(RAMSES_LIB)
+	rm -rf __pycache__

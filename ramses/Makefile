@@ -35,5 +35,5 @@ $(soname): $(obj_files)
 .PHONY: clean
 
 clean:
-	rm -f $(arname) $(soname) $(obj_files)
-	rm -rf tools/__pycache__ pyramses/__pycache__
+	rm -f $(arname) $(soname) $(soname).$(abi) $(obj_files)
+	rm -rf tools/__pycache__
