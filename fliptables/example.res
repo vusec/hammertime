@@ -1,3 +1,4 @@
+# Lines starting with a hash are comments
 (0 0 0 0 f100) (0 0 0 0 f102) : (0 0 0 0 f101) 0354|fe|ff 0d69|fd|ff 0e21|f7|ff 11d0|f7|ff 1903|bf|ff 1e29|fe|ff 
 (0 0 0 0 f101) (0 0 0 0 f103) : 
 (0 0 0 0 f102) (0 0 0 0 f104) : (0 0 0 0 f103) 002d|fe|ff 19ea|ef|ff 

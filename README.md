@@ -12,14 +12,18 @@ While still a work in progress, the following components make up Hammertime:
 * **Predictors** that decide whether a certain memory access behaviour triggers rowhammer.
 * Glue code to tie all this together and effect bit flips in memory.
 * **Fliptables**: example profiles of rowhammer-vulnerable DRAM chips, usable by a dedicated predictor.
-* Various cool tools:
+* Various cool tools and utilities:
 	* `tools/profile`: a tool to test a running system's vulnerability to rowhammer.
 For more information, check out its own README file under `tools/profile/README`.
 **NOTE:** this tool is still an experimental bundle of spaghetti code which will get rewritten at some point.
 Therefore do not consider any part of it a stable API until this notice is removed.
 	* `py/prettyprofile.py` converts a `profile` output into something more human-friendly.
 	* `py/hammerprof.py` converts a `profile` output into a fliptable.
-	* `ramses/tools/msys_detect.py` interactive tool for detecting current system memory configuration.
+	* `py/common_flips.py` processes multiple `profile` results selecting only bit flips common to all. Useful for finding bit flips that can be reliably triggered.
+	* `py/pyramses` is a Python interface to `libramses`.
+	* `py/hammertime/` contains Python interfaces to work with profile results and fliptables.
+	* `py/hammertime/estimate.py` is a framework for rapidly estimating Rowhammer attack effectiveness, based on exploit models and profile results.
+	* `ramses/tools/msys_detect.py` is an interactive tool for detecting current system memory configuration.
 
 For an in-depth view of how these components fit together and the overall architecture of Hammertime check out `DESIGN.md` and browse the source code.
 Header files are particularly explanation-rich.
@@ -46,7 +50,7 @@ In addition `tools/profile` is a powerful rowhammer testing and profiling tool.
 
 #### Dependencies ####
 
-* Linux kernel >= 3.18
+* Linux kernel >= 3.18 with headers
 * `glibc` with pthread support
 * `libpfm4`
 * Python >= 3.2 --- used by tools
