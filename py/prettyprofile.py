@@ -17,11 +17,11 @@
 
 import sys
 
-import hammerprof
+from hammertime import profile
 
 
 def prettify_profile_line(line):
-    run = hammerprof.decode_line(line)
+    run = profile.decode_line(line)
     head = ('Hammering row{} '.format('s' if len(run.targets) > 1 else '') +
             ', '.join(str(x.row) for x in run.targets) +
             ' on bank {0.bank}, rank {0.rank}, DIMM {0.dimm}, channel {0.chan}\n'.format(run.targets[0])
@@ -29,7 +29,7 @@ def prettify_profile_line(line):
     tail = '\t' + '\n\t'.join(
         'Bit flip on row {:6} byte {:4}: expected {} got {}'.format(
             k.row, x.off, bin(x.exp)[2:].zfill(8), bin(x.got)[2:].zfill(8)
-        ) for k, v in run.victims.items() for x in v)
+        ) for k, v in run.victims for x in v)
     return head + tail
 
 

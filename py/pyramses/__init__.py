@@ -19,6 +19,7 @@ import os
 import sys
 import ctypes
 import ctypes.util
+import functools
 
 LIBNAME = 'libramses.so'
 
@@ -26,6 +27,7 @@ class RamsesError(Exception):
     """Exception class used to encapsulate ramses errors"""
 
 
+@functools.total_ordering
 class DRAMAddr(ctypes.Structure):
     _fields_ = [('chan', ctypes.c_ubyte),
                 ('dimm', ctypes.c_ubyte),
@@ -41,11 +43,19 @@ class DRAMAddr(ctypes.Structure):
         return '{0}({1.chan}, {1.dimm}, {1.rank}, {1.bank}, {1.row}, {1.col})'.format(type(self).__name__, self)
 
     def __eq__(self, other):
-        return self.same_bank(other) and self.row == other.row and self.col == other.col
+        if isinstance(other, DRAMAddr):
+            return self.numeric_value == other.numeric_value
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, DRAMAddr):
+            return self.numeric_value < other.numeric_value
+        else:
+            return NotImplemented
 
     def __hash__(self):
-        return (self.col + self.row << 16 + self.bank << 32 +
-                self.rank << 40 + self.dimm << 48 + self.chan << 52)
+        return self.numeric_value
 
     def __len__(self):
         return len(self._fields_)
@@ -65,11 +75,36 @@ class DRAMAddr(ctypes.Structure):
         return (self.chan == other.chan and self.dimm == other.dimm and
                 self.rank == other.rank and self.bank == other.bank)
 
-    def add_offset(self, off):
-        return type(self)(self.chan, self.dimm, self.rank, self.bank, self.row, self.col + off//8)
+    @property
+    def numeric_value(self):
+        return (self.col + (self.row << 16) + (self.bank << 32) +
+                (self.rank << 40) + (self.dimm << 48) + (self.chan << 52))
 
-    def add_row(self, roff):
-        return type(self)(self.chan, self.dimm, self.rank, self.bank, self.row + roff, self.col)
+    def __add__(self, other):
+        if isinstance(other, DRAMAddr):
+            return type(self)(
+                self.chan + other.chan,
+                self.dimm + other.dimm,
+                self.rank + other.rank,
+                self.bank + other.bank,
+                self.row + other.row,
+                self.col + other.col
+            )
+        else:
+            return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, DRAMAddr):
+            return type(self)(
+                self.chan - other.chan,
+                self.dimm - other.dimm,
+                self.rank - other.rank,
+                self.bank - other.bank,
+                self.row - other.row,
+                self.col - other.col
+            )
+        else:
+            return NotImplemented
 
 
 class MemorySystem(ctypes.Structure):
@@ -107,6 +142,11 @@ class MemorySystem(ctypes.Structure):
     def granularity(self):
         self._assert_dlls()
         return _lib.ramses_map_granularity(self.controller, self.mem_geometry, self.controller_opts)
+
+    @property
+    def max_memory(self):
+        self._assert_dlls()
+        return _lib.ramses_max_memory(self.controller, self.mem_geometry, self.controller_opts)
 
     def resolve(self, phys_addr):
         self._assert_dlls()
@@ -188,7 +228,7 @@ def init_dlls(extra_paths=None):
     _lib.ramses_resolve.restype = DRAMAddr
     _lib.ramses_resolve.argtypes = [ctypes.c_void_p, ctypes.c_ulonglong]
     _lib.ramses_resolve_reverse.restype = ctypes.c_ulonglong
-    _lib.ramses_resolve_reverse.argtypes = [ctypes.c_void_p, ctypes.c_ulonglong]
+    _lib.ramses_resolve_reverse.argtypes = [ctypes.c_void_p, DRAMAddr]
 
     _lib.ramses_route.restype = ctypes.c_ulonglong
     _lib.ramses_route.argtypes = [ctypes.c_uint, ctypes.c_ulonglong, ctypes.c_void_p]
@@ -209,6 +249,9 @@ def init_dlls(extra_paths=None):
 
     _lib.ramses_map_granularity.restype = ctypes.c_ulonglong
     _lib.ramses_map_granularity.argtypes = [ctypes.c_uint, ctypes.c_int, ctypes.c_void_p]
+
+    _lib.ramses_max_memory.restype = ctypes.c_ulonglong
+    _lib.ramses_max_memory.argtypes = [ctypes.c_uint, ctypes.c_int, ctypes.c_void_p]
 
     _libc.fopen.restype = ctypes.c_void_p
     _libc.fopen.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
