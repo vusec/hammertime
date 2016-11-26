@@ -39,13 +39,15 @@ int ramses_memsys_setup_x86(enum MemController ctrl, int geom_flags, void *ctrlo
                             memaddr_t ramsize, physaddr_t pcistart, int intelme,
                             enum DIMMRemap remap, struct MemorySystem *output);
 
-/* Load a memory system from stream f.
+/*
+ * Load a memory system from stream f.
  * err, if not NULL, will be used to print detailed error messages to.
  * File format is the one output by tools/msys_detect.py
  */
 int ramses_memsys_load_file(FILE *f, struct MemorySystem *output, FILE *err);
 
-/* Load a memory system from string str.
+/*
+ * Load a memory system from string str.
  * Otherwise identical to ramses_memsys_load_file
  */
 int ramses_memsys_load_str(char *s, size_t slen, struct MemorySystem *output, FILE *err);

@@ -154,7 +154,8 @@ static void hamqueue_clear(struct HamQueue *q)
 
 /* Util functions */
 
-/* Find a target entry in pool that is in bank conflict with loc
+/*
+ * Find a target entry in pool that is in bank conflict with loc
  * Return pointer to found target or NULL if no conflict found
  */
 static struct AddrEntry *find_bank_conflict(struct DRAMAddr loc, struct AddrEntry *pool, size_t poolsize)
@@ -220,8 +221,10 @@ static size_t next_row_entry_idx(struct HammerCtx *ctx, size_t startidx)
 	return ret;
 }
 
-/* Try to find an autopressure target that produces a bank-conflict with ht
- * If that fails, return an arbitrary pressure buffer location */
+/*
+ * Try to find an autopressure target that produces a bank-conflict with ht
+ * If that fails, return an arbitrary pressure buffer location
+ */
 static uintptr_t ap_bank_conflict(struct HammerCtx *ctx, struct AddrEntry ht)
 {
 	struct AddrEntry *apt = find_bank_conflict(ht.dramaddr, ctx->ap_targets, ctx->ap_tcount);
@@ -232,7 +235,8 @@ static uintptr_t ap_bank_conflict(struct HammerCtx *ctx, struct AddrEntry ht)
 	}
 }
 
-/* Attempt to fill a HamQueue with consecutive row targets.
+/*
+ * Attempt to fill a HamQueue with consecutive row targets.
  * Updates idx as it progresses.
  * If end is 0, ctx->tcount is used.
  * Returns when queue is full or idx has either reached the end or a non-consecutive row.
@@ -251,7 +255,8 @@ static void fill_queue(struct HammerCtx *ctx, struct HamQueue *q, size_t *idx, s
 			 ramses_succ_rows(ctx->targets[hamqueue_idx(q, -2)].dramaddr, ctx->targets[hamqueue_idx(q, -1)].dramaddr));
 }
 
-/* Attempt to "step", i.e. push one row into a full queue (throwing out the head).
+/*
+ * Attempt to "step", i.e. push one row into a full queue (throwing out the head).
  * Updates idx if it progresses.
  * If end is 0, ctx->tcount is used.
  * Fails if upcoming row is not the direct succesor to the last row in queue.
@@ -272,7 +277,8 @@ static bool step_queue(struct HammerCtx *ctx, struct HamQueue *q, size_t *idx, s
 	return can_step;
 }
 
-/* Get a HamQueue ready for hammering (i.e. filled with consecutive rows).
+/*
+ * Get a HamQueue ready for hammering (i.e. filled with consecutive rows).
  * This implies a (possible) combination of stepping, filling and clearing.
  * Updates idx as it progresses.
  * If end is 0, ctx->tcount is used.
@@ -407,7 +413,8 @@ static void rh_check_doublesided(struct HammerCtx *ctx, struct HamQueue *q, hamq
 #undef FILL_SHORTHAND
 #undef TFILL_SHORTHAND
 
-/* Actual hammering functions operating on HamQueues.
+/*
+ * Actual hammering functions operating on HamQueues.
  * The last index is used as iteration boundary (i.e. "end of last row in queue") and never
  * dereferenced. Therefore it is safe to have ctx->tcount as last element in queue.
  */
@@ -1031,7 +1038,7 @@ int main(int argc, char *argv[])
 			}
 			ctx.ap_tcount = setup_targets(&(ctx.ap_targets), presbuf, pbuf_len, &msys);
 			ctx.hammer_opts |= HAM_OPT_AUTOPRESSURE;
-#if 0 // HACK: Poor-man's debug switch
+#if 0 // HACK: Poor man's debug switch
 			for (size_t i = 0; i < ctx.ap_tcount; i++) {
 				print_entry(ctx->outf, ctx.ap_targets[i], "\n");
 			}

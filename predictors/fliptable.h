@@ -16,7 +16,8 @@
  *
  */
 
-/* Fliptables --- efficient, binary lookup tables for rowhammer attacks
+/*
+ * Fliptables --- efficient, binary lookup tables for rowhammer attacks
  *
  * A fliptable expresses the bitflips that occur on a particular DRAM chip when
  * "neighbour" rows an arbitrary distance away are being hammered.
@@ -74,7 +75,8 @@ enum ExtrapMode {
 	                     * no bitblips. */
 };
 
-/* Look up a rowhammering pattern targeted at addr in the fliptable ft.
+/*
+ * Look up a rowhammering pattern targeted at addr in the fliptable ft.
  * If addr is not found bitflips are reported according to extrap.
  * Returns the number of bitflips and sets *flips to an array containing details.
  * If extrapolation is used, extrap_diff gets set to an offset with which flip

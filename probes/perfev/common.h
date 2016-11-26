@@ -16,7 +16,8 @@
  *
  */
 
-/* Common subroutines used by Linux perf_event probes
+/*
+ * Common subroutines used by Linux perf_event probes
  *
  * The design shared by perf_event probes is using a perfev-util/pollster thread
  * to check on one or more perf_event file descriptors and trigger callbacks
@@ -37,7 +38,8 @@
 #include <unistd.h>
 #include <pthread.h>
 
-/* Basic state for a generic perfev probe
+/*
+ * Basic state for a generic perfev probe
  * Can be extended by nesting it as the first element in a custom state struct
  */
 struct perfevprobe_state {
@@ -48,7 +50,8 @@ struct perfevprobe_state {
 	int status;	/* Status flags used by PROBE_STATUS */
 };
 
-/* Basic state for a probe that monitors performance events of a target process.
+/*
+ * Basic state for a probe that monitors performance events of a target process.
  * Can be extended by nesting it as the first element in a custom state struct
  */
 struct perfevprobe_pid_state {
@@ -57,7 +60,8 @@ struct perfevprobe_pid_state {
 	int tstart_fd;	/* File descriptor provided by perfev_child_spawn_delayed */
 };
 
-/* Function used to decode a sample perf_event_record into a physical address
+/*
+ * Function used to decode a sample perf_event_record into a physical address
  * (pa) and optionally (if arguments aren't NULL) a virtual address (va) and
  * MemOpStats (ostat)
  *
@@ -71,12 +75,14 @@ typedef int
 typedef void
 (*record_handle_func_t)(void *arg, void *record);
 
-/* END callback to be passed to pollster. Ensures that out->finished is set and
+/*
+ * END callback to be passed to pollster. Ensures that out->finished is set and
  * that consumers are notified via the mutex/cond combo.
  */
 void perfevprobe_end_cb(void *arg);
 
-/* IN callback template for processing sample perf_event records.
+/*
+ * IN callback template for processing sample perf_event records.
  *
  * Reads from the MMAP buffer one entry at a time, passes records of type
  * PERF_RECORD_SAMPLE on to sample_decode and writes its output to the stream

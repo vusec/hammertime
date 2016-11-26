@@ -16,7 +16,8 @@
  *
  */
 
-/* Hammertime probe interface
+/*
+ * Hammertime probe interface
  *
  * A probe is the piece of software that "taps" into a source providing memory
  * operation events (e.g. hardware performance counters, instrumented execution
@@ -57,7 +58,8 @@ struct ProbeOutput {
 	size_t data_size; /* Data buffer size, in bytes */
 	void *data; /* Data buffer, to be written to by the probe */
 	int fmtflags; /* Flags indicating the expected format of entries in *data */
-	/* NOTE: format of entries in *data
+	/*
+	 * NOTE: format of entries in *data
 	 * Depending on fmtflags, memory operation entries are in the form
 	 *
 	 * struct memop_entry {
@@ -94,7 +96,8 @@ struct ProbeOutput {
 	uint8_t sample_loss;
 };
 
-/* Sanity check that an entry will always fall within a contiguous buffer region.
+/*
+ * Sanity check that an entry will always fall within a contiguous buffer region.
  * Greatly simplifies producer and consumer code.
  */
 static inline int probeout_check_size(struct ProbeOutput *pout)
@@ -111,7 +114,8 @@ static inline int probeout_check_size(struct ProbeOutput *pout)
 	return 0;
 }
 
-/* The correct way to check (and wait on) an output head update.
+/*
+ * The correct way to check (and wait on) an output head update.
  * Returns 1 if output finished, 0 otherwise.
  */
 static inline int probeout_read_head(struct ProbeOutput *pout,
@@ -150,15 +154,18 @@ enum ProbeCPFunc {
 	_PROBE_CPMAXF		/* Guard value; used for allocations, etc. */
 };
 
-/* IMPORTANT: PROBE TERMINATION
+/*
+ * IMPORTANT: PROBE TERMINATION
  * A probe implementation MUST make sure to signal all probe output consumers
  * (by using the cond in struct ProbeOutput) during normal termination AFTER
  * data generation has stopped and the `finished' flag is set in ProbeOutput.
  */
 
-/* Control panel funcs (with the exception of PROBE_STATUS, described below)
+/*
+ * Control panel funcs (with the exception of PROBE_STATUS, described below)
  * must return the following codes on success or if not implemented, respectively.
- * Probes are free to assign error codes to other integer values */
+ * Probes are free to assign error codes to other integer values
+ */
 #define PROBE_CPFUNC_SUCCESS  0
 #define PROBE_CPFUNC_NOTIMPL -1
 
@@ -178,7 +185,8 @@ struct ProbeControlPanel {
 	probe_cpfunc_t func[_PROBE_CPMAXF]; /* Standard probe control funcs */
 };
 
-/* WARNING: calling PROBE_DESTROY will free allocated data structures associated
+/*
+ * WARNING: calling PROBE_DESTROY will free allocated data structures associated
  * with the probe, including, but not limited to, ProbeControlPanel.ctx .
  * It is essentially a poor-man's destructor
  * DO NOT attempt to call any other control panel funcs after PROBE_DESTROY

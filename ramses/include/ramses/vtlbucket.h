@@ -16,7 +16,8 @@
  *
  */
 
-/* Interface used by VTLB storage data structures, a.k.a. "buckets"
+/*
+ * Interface used by VTLB storage data structures, a.k.a. "buckets"
  * A bucket is a key-value mapping that ideally supports fast lookup.
  */
 
@@ -27,7 +28,8 @@
 
 struct VTLBucketFuncs {
 	/* Bucket functions */
-	/* Search for key. Return 0 if present, nonzero otherwise.
+	/*
+	 * Search for key. Return 0 if present, nonzero otherwise.
 	 * handle, if not NULL, will be set to an appropriate value for use with
 	 * get and/or insert.
 	 */

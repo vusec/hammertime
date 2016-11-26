@@ -16,7 +16,8 @@
  *
  */
 
-/* A predictor outputting bitflips based on fliptables.
+/*
+ * A predictor outputting bitflips based on fliptables.
  * It can naively identify a specific rowhammer access pattern, defined by
  * HammerMode, by counting the number of cache-missing memory accesses within
  * a DRAM refresh interval. The threshold depends on the runtime environment and

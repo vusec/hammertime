@@ -170,7 +170,8 @@ int perfevprobe_pid_destroy_f(void *c)
 	return perfevprobe_destroy_f(c);
 }
 
-/* PROBE_START is a noop; a performance event is always present in the kernel
+/*
+ * PROBE_START is a noop; a performance event is always present in the kernel
  * once set up, therefore the probe is always started, albeit not always running
  */
 int perfevprobe_start_f(void *c)

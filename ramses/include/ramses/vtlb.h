@@ -16,7 +16,8 @@
  *
  */
 
-/* VTLB -- Virtual Translation Lookahead Buffer
+/*
+ * VTLB -- Virtual Translation Lookahead Buffer
  * A VTLB is a data structure that allows efficient caching of
  * physical-to-virtual address mappings found in /proc/[pid]/pagemap.
  * Provides a simple lookup interface that handles cache hits and misses.
@@ -38,7 +39,8 @@
 
 //~ #define RAMSES_VTLB_DEBUG
 
-/* Set up a VTLB with provided parameters.
+/*
+ * Set up a VTLB with provided parameters.
  * Time values are in microseconds.
  * The buckets are set up automatically to use a sane default.
  * On success, returns an opaque pointer to be passed to other ramses_vtlb_* functions.
@@ -48,7 +50,8 @@ void *ramses_vtlb_create(unsigned int gensize, unsigned int num_gen,
                          unsigned long min_trust_us, unsigned long max_trust_us,
                          int pagemap_fd);
 
-/* Set up a VTLB with custom buckets.
+/*
+ * Set up a VTLB with custom buckets.
  * Return value is the same as above.
  */
 void *ramses_vtlb_create_cust_buckets(struct VTLBucketFuncs *bfuncs,
@@ -60,7 +63,8 @@ void *ramses_vtlb_create_cust_buckets(struct VTLBucketFuncs *bfuncs,
 /* Destroy a VTLB, freeing all held resources */
 void ramses_vtlb_destroy(void *vtlb);
 
-/* Update the internal time state of the VTLB.
+/*
+ * Update the internal time state of the VTLB.
  * Time values are expressed in nanoseconds.
  * Choose either one of these functions to use for a particular VTLB instance.
  * Mixing and matching is possible, but will trigger a complete flush when

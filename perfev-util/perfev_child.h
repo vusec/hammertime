@@ -45,7 +45,8 @@ struct PerfevChildArgs {
 
 /* Spawn a child, attach events and perform execve immediately */
 pid_t perfev_child_spawn(struct PerfevChildArgs *args, struct PerfevResult *res);
-/* Spawn a child, attach events, but delay execve until a byte is written into
+/*
+ * Spawn a child, attach events, but delay execve until a byte is written into
  * child_start_fd. Closing this fd before writing will cause the child to exit.
  */
 pid_t perfev_child_spawn_delayed(struct PerfevChildArgs *args,

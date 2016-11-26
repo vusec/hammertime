@@ -16,7 +16,8 @@
  *
  */
 
-/* Linux perf event pollster.
+/*
+ * Linux perf event pollster.
  * Handles polling of an arbitrary number of perf event file descriptors,
  * using callbacks to handle events.
  */
@@ -37,7 +38,8 @@ struct PerfMMAP {
 /* IN callback -- called when the POLL_IN event is signaled on an fd */
 typedef void (*in_callback_t)(int fd, int64_t time,
                               struct PerfMMAP *mmap, void *arg);
-/* MISC callback -- called when a different poll event is signaled on an fd.
+/*
+ * MISC callback -- called when a different poll event is signaled on an fd.
  * Must return 0 if the fd should be deactivated, nonzero if it should remain
  * actively polled.
  */

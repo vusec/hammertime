@@ -16,7 +16,8 @@
  *
  */
 
-/* Interface for hammertime predictors
+/*
+ * Interface for hammertime predictors
  *
  * A predictor is essentially a black box that takes as input memory operations
  * (loads and stores) & advances in time, and responds with requests for
@@ -31,14 +32,16 @@
 #include <unistd.h>
 
 enum ReqType {
-	REQ_BITFLIP,
-	/* A bitflip is predicted to have occured
+	/*
+	 * A bitflip is predicted to have occured
 	 * arg is struct BitFlipArg
 	 */
-	REQ_DATA,
-	/* Request for memory contents at a particular address
+	REQ_BITFLIP,
+	/*
+	 * Request for memory contents at a particular address
 	 * arg is the number of memory cells data is requested for
 	 */
+	REQ_DATA,
 };
 
 struct BitFlipArg {
@@ -73,7 +76,8 @@ struct Predictor {
 	                  struct PredictorReq *reqs, int maxreq);
 };
 
-/* Predictor functions (aside from destroy) can trigger requests to be generated.
+/*
+ * Predictor functions (aside from destroy) can trigger requests to be generated.
  * These requests are written to *reqs, a buffer provided by the caller,
  * up to a maximum of maxreq entries.
  * The return value is the total number of requests generated, regardless of

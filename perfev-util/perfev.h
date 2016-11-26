@@ -34,7 +34,8 @@ struct PerfevResult {
 #define PERFEV_FLAG_CGROUP	4 /* Pass the PERF_FLAG_PID_CGROUP flag to the kernel */
 #define PERFEV_FLAG_CLOEXEC	8 /* Pass the PERF_FLAG_FD_CLOEXEC flag to the kernel */
 
-/* Passed to perfev_attach_pid and perfev_attach_self indicates that separate
+/*
+ * Passed to perfev_attach_pid and perfev_attach_self indicates that separate
  * event fds should be opened for each individual active CPU on the system.
  * This is required for inherited sampling events, otherwise MMAP will fail.
  * Useful for multi-task (i.e. multi-[threaded|process]) monitoring.
@@ -43,7 +44,8 @@ struct PerfevResult {
  */
 #define PERFEV_FLAG_PERCPU	16
 
-/* Perf event attach functions.
+/*
+ * Perf event attach functions.
  * Writes details into *res, returns the number of events successfully attached.
  *
  * group, if non-negative, acts as group override for perf_event_open calls.
@@ -59,12 +61,14 @@ int perfev_attach_cpu(struct perf_event_attr *events[], int num_events,
 int perfev_attach_self(struct perf_event_attr *events[], int num_events,
                        int flags, int group, struct PerfevResult *res);
 
-/* Encode a perf event specified by evstr.
+/*
+ * Encode a perf event specified by evstr.
  * Return 0 if successful, non-zero and sets errno otherwise.
  */
 int perfev_encode(const char *evstr, struct perf_event_attr *attr);
 
-/* Encode num_events perf events specified by the strings in options[].
+/*
+ * Encode num_events perf events specified by the strings in options[].
  * options[] is an array of size num_events containing NULL-terminated arrays
  * of strings.
  * Encoded perf events will be written to events[].

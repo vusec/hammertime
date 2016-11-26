@@ -16,7 +16,8 @@
  *
  */
 
-/* Simple demo program illustrating how artificial bitflips are generated
+/*
+ * Simple demo program illustrating how artificial bitflips are generated
  * using the various parts of hammertime.
  *
  * As this project is still a work in progress, expect the function of this
@@ -40,7 +41,8 @@
 
 static const size_t BUFSIZE = 2 << 20;
 
-/* Calibrated on dev machine.
+/*
+ * Calibrated on dev machine.
  * Your mileage may vary; lower this if not getting bitflips.
  * Alternatively, raise this if flips are occurring all over the place.
  */

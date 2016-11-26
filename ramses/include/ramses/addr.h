@@ -16,7 +16,8 @@
  *
  */
 
-/* End-to-end memory system address handling.
+/*
+ * End-to-end memory system address handling.
  * This consists of 3 stages:
  *  	- Physical Address Routing
  *  	- DRAM Address Mapping

@@ -34,7 +34,8 @@
 #endif
 #endif
 
-/* Ideally, poll would run completely asynchronously, with infinite timeout.
+/*
+ * Ideally, poll would run completely asynchronously, with infinite timeout.
  * Unfortunately, we don't get notified when an fd is being closed so we need
  * to periodically wake up and check whether we still have valid fds.
  */

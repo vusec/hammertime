@@ -87,7 +87,8 @@ static int decode(void *state, void *record,
 	uintptr_t vpfn = pr->addr >> 12;
 	uintptr_t voff = pr->addr & 0xfff;
 	uint64_t pid = pr->pid;
-	/* HACK: This relies on virtual addresses fitting within 48 bits and PIDs
+	/*
+	 * HACK: This relies on virtual addresses fitting within 48 bits and PIDs
 	 * within 28 bits (currently a sane assumption; the future may change that)
 	 */
 	uint64_t k = vpfn + (pid << 36);

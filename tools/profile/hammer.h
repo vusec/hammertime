@@ -28,6 +28,6 @@ void hammer_triple(const uintptr_t *addrs, unsigned int itercount);
 void hammer_quad(const uintptr_t *addrs, unsigned int itercount);
 void hammer_six(const uintptr_t *addrs, unsigned int itercount);
 unsigned int calibrate_hammer(void (*hammer_func)(const uintptr_t *, unsigned int), const uintptr_t *addrs,
-							  unsigned int dram_refresh_period_us, unsigned int max_overshoot_us);
+                              unsigned int dram_refresh_period_us, unsigned int max_overshoot_us);
 
 #endif /* hammer.h */

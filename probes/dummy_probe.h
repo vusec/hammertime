@@ -16,7 +16,8 @@
  *
  */
 
-/* A dummy demonstration probe which outputs random addresses.
+/*
+ * A dummy demonstration probe which outputs random addresses.
  * Useful for dry runs or stress-testing
  */
 

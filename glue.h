@@ -26,7 +26,8 @@
 
 #include <ramses/resolve.h>
 
-/* Main loop that uses a physical memory fd (e.g. /dev/mem) to induce bitflips
+/*
+ * Main loop that uses a physical memory fd (e.g. /dev/mem) to induce bitflips
  *
  * NOTE: THIS DOES NOT CARE WHERE THE MEMORY IS MAPPED TO OR BY WHOM.
  * USING THIS WITH /dev/mem MAY LEAD TO DATA LOSS. YOU HAVE BEEN WARNED.

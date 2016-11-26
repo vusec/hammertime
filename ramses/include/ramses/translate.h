@@ -23,7 +23,8 @@
 
 #include <ramses/types.h>
 
-/* Heuristically attempt to translate a virtual address.
+/*
+ * Heuristically attempt to translate a virtual address.
  * Keeps the prop_bits least significant bits of addr (assuming contiguousness) as a "page offset"
  * which it adds to base.
  *
@@ -32,7 +33,8 @@
  */
 physaddr_t ramses_translate_heuristic(uintptr_t addr, int prop_bits, physaddr_t base);
 
-/* Use the /proc/[pid]/pagemap interface to translate a virtual address.
+/*
+ * Use the /proc/[pid]/pagemap interface to translate a virtual address.
  * Returns (physaddr_t)(-1) and sets errno if errors occur.
  * Sets errno to ENODATA if requested address is not mapped to memory.
  */

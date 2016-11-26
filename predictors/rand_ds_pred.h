@@ -16,7 +16,8 @@
  *
  */
 
-/* A (very) simple demo predictor that randomly generates bitflips on access
+/*
+ * A (very) simple demo predictor that randomly generates bitflips on access
  * patterns naively resembling doublesided rowhammering
  */
 
@@ -25,7 +26,8 @@
 
 #include "predictor.h"
 
-/* Set up the context and functions for the predictor.
+/*
+ * Set up the context and functions for the predictor.
  * chance is the probability of a bitflip; P = chance/RAND_MAX;
  */
 int init_rand_ds_predictor(struct Predictor *p, int chance);

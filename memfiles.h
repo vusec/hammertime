@@ -16,7 +16,8 @@
  *
  */
 
-/* Basic utility functions for using memory map files provided by Linux.
+/*
+ * Basic utility functions for using memory map files provided by Linux.
  * These include /proc/[pid]/mem and /dev/mem for virtual and physical memory,
  * respectively.
  */
@@ -35,7 +36,8 @@ int memfile_pidmem(pid_t pid, int flags);
 /* Get a file descriptor for /dev/mem; you may need a custom kernel for this */
 int memfile_devmem(int flags);
 
-/* Flip bits in one memory byte according to pull-up and pull-down flip masks.
+/*
+ * Flip bits in one memory byte according to pull-up and pull-down flip masks.
  * Return 0 if successful, nonzero and sets errno otherwise
  */
 int memfile_flip_bits(int fd, off_t offset, uint8_t pullup, uint8_t pulldown);
