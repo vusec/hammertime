@@ -25,8 +25,11 @@ if __name__ == '__main__':
         print("Missing arguments")
         print("usage: {} PROFILE_PATH FLIPTABLE_PATH".format(sys.argv[0]))
     else:
-        ft = hammertime.profile.profile2fliptable(sys.argv[1])
-        print('Ranges: {}'.format(len(ft.ranges)))
-        print('Hammers: {}'.format(len(ft.hammers)))
-        print('Flips: {}'.format(len(ft.flips)))
-        ft.write(sys.argv[2])
+        try:
+            ft = hammertime.profile.profile2fliptable(sys.argv[1])
+            print('Ranges: {}'.format(len(ft.ranges)))
+            print('Hammers: {}'.format(len(ft.hammers)))
+            print('Flips: {}'.format(len(ft.flips)))
+            ft.write(sys.argv[2])
+        except KeyboardInterrupt:
+            print('Interrupted, exiting...')
