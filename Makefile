@@ -12,7 +12,7 @@ obj_files := $(filter-out demo.o, $(patsubst %.c,%.o,$(wildcard *.c)))
 build_subdirs := perfev-util predictors probes py
 extra_subdirs := ramses tools fliptables
 
-build_files := $(obj_files) $(build_subdirs) ramses tools
+build_files := $(obj_files) $(build_subdirs) ramses tools py
 
 default: $(build_files)
 
@@ -44,7 +44,6 @@ fliptables:
 
 clean:
 	@for d in $(build_subdirs) ramses tools; do $(MAKE) -C $$d clean; done
-	rm -rf py/hammertime/__pycache__
 	rm -f $(obj_files) demo
 
 cleanall: clean

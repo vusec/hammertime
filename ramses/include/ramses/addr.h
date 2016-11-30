@@ -91,6 +91,13 @@ enum MemController {
 #define MEMGEOM_DIMMSELECT	2 /* 'Two dimms per channel' */
 #define MEMGEOM_CHANSELECT	4 /* 'Two channels per controller' */
 
+struct IntelCntrlOpts {
+	int flags;
+};
+
+#define MEMCTRLOPT_INTEL_RANKMIRROR	1 /* Enable address pin mirroring on the second rank */
+
+
 struct DRAMAddr ramses_map(enum MemController c, memaddr_t addr, int geom_flags, const void *opts);
 memaddr_t ramses_map_reverse(enum MemController c, struct DRAMAddr addr, int geom_flags, const void *opts);
 

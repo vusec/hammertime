@@ -1,6 +1,9 @@
-all:
+all: pyramses
 
-.PHONY: clean
+pyramses:
+	$(MAKE) -C $@
+
+.PHONY: clean pyramses
 
 clean:
 	$(MAKE) -C pyramses/ clean

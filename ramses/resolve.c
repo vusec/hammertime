@@ -83,9 +83,30 @@ static int handle_routeopt(char *s, struct MemorySystem *o)
 			                        &smm->args[SMM_ARG_X86_PCISTART],
 			                        &smm->args[SMM_ARG_X86_TOPOFMEM]);
 		} else {
+			free(smm);
 			return 1;
 		}
 		o->route_opts = smm;
+	} else {
+		return 1;
+	}
+	return 0;
+}
+
+static int handle_cntrlopt(char *s, struct MemorySystem *o)
+{
+	enum MemController c = o->controller;
+	if (c == MEMCTRL_INTEL_IVYHASWELL_DDR3 || c == MEMCTRL_INTEL_SANDY_DDR3) {
+		struct IntelCntrlOpts *ctrlo = malloc(sizeof(struct IntelCntrlOpts));
+		ctrlo->flags = 0;
+
+		if (strcmp("rank_mirror", s) == 0) {
+			ctrlo->flags |= MEMCTRLOPT_INTEL_RANKMIRROR;
+		} else {
+			free(ctrlo);
+			return 1;
+		}
+		o->controller_opts = ctrlo;
 	} else {
 		return 1;
 	}
@@ -119,6 +140,11 @@ static int handle_line(char *line, ssize_t llen, struct MemorySystem *output, FI
 		if (handle_routeopt(arg, output)) {
 			if (err) fprintf(err, "Route options error: `%s'\n", arg);
 			return 8;
+		}
+	} else if (strcmp("cntrl_opts", cmd) == 0) {
+		if (handle_cntrlopt(arg, output)) {
+			if (err) fprintf(err, "Controller options error: `%s'\n", arg);
+			return 32;
 		}
 	} else if (strcmp("chan", cmd) == 0) {
 		output->mem_geometry |= MEMGEOM_CHANSELECT;
@@ -159,7 +185,6 @@ int ramses_memsys_load_str(char *s, size_t slen, struct MemorySystem *output, FI
 	memset(output, 0, sizeof(*output));
 	line = strtok_r(sb, "\n", &ptr);
 	do {
-		//~ printf("%s\n", line);
 		ret |= handle_line(line, ptr - line - 1, output, err);
 		line = strtok_r(NULL, "\n", &ptr);
 	} while (line);

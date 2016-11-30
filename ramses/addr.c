@@ -91,6 +91,26 @@ physaddr_t ramses_route_reverse(enum PhysAddrRouter r, memaddr_t addr, const str
 }
 
 /* DRAM Address mapping */
+
+static struct DRAMAddr ddr3_rank_mirror(struct DRAMAddr addr)
+{
+	struct DRAMAddr ret = addr;
+	/* Switch address bits 3<->4 5<->6 7<->8 */
+	ret.row &= 0xfe07;
+	ret.row |= (BIT(7, addr.row) << 8) | (BIT(8, addr.row) << 7) |
+	           (BIT(5, addr.row) << 6) | (BIT(6, addr.row) << 5) |
+	           (BIT(3, addr.row) << 4) | (BIT(4, addr.row) << 3);
+	ret.col &= 0xfe07;
+	ret.col |= (BIT(7, addr.col) << 8) | (BIT(8, addr.col) << 7) |
+	           (BIT(5, addr.col) << 6) | (BIT(6, addr.col) << 5) |
+	           (BIT(3, addr.col) << 4) | (BIT(4, addr.col) << 3);
+	/* Switch bank bits 0<->1 */
+	ret.bank &= 0xfffc;
+	ret.bank |= (BIT(0, addr.bank) << 1) | BIT(1, addr.bank);
+
+	return ret;
+}
+
 /* MEMCTRL_NAIVE_DDR3 */
 static struct DRAMAddr map_naive_ddr3(memaddr_t addr, int geom_flags, const void *opts)
 {
@@ -168,6 +188,13 @@ static struct DRAMAddr map_sandy(memaddr_t addr, int geom_flags, const void *opt
 	retval.row = addr & LS_BITMASK(16);
 	addr >>= 16;
 
+	if (opts != NULL) {
+		const struct IntelCntrlOpts *o = (const struct IntelCntrlOpts *)opts;
+		if (o->flags | MEMCTRLOPT_INTEL_RANKMIRROR && BIT(0, retval.rank)) {
+			retval = ddr3_rank_mirror(retval);
+		}
+	}
+
 	/* Sanity check that address "fits" in memory geometry */
 	//~ assert(addr == 0);
 	return retval;
@@ -176,6 +203,13 @@ static struct DRAMAddr map_sandy(memaddr_t addr, int geom_flags, const void *opt
 static memaddr_t map_reverse_sandy(struct DRAMAddr addr, int geom_flags, const void *opts)
 {
 	memaddr_t retval = 0;
+
+	if (opts != NULL) {
+		const struct IntelCntrlOpts *o = (const struct IntelCntrlOpts *)opts;
+		if (o->flags | MEMCTRLOPT_INTEL_RANKMIRROR && BIT(0, addr.rank)) {
+			addr = ddr3_rank_mirror(addr);
+		}
+	}
 
 	retval |= addr.row & LS_BITMASK(16);
 	if (geom_flags & MEMGEOM_RANKSELECT) {
@@ -248,6 +282,12 @@ static struct DRAMAddr map_ivyhaswell(memaddr_t addr, int geom_flags, const void
 	retval.row = addr & LS_BITMASK(16);
 	addr >>= 16;
 
+	if (opts != NULL) {
+		const struct IntelCntrlOpts *o = (const struct IntelCntrlOpts *)opts;
+		if (o->flags | MEMCTRLOPT_INTEL_RANKMIRROR && BIT(0, retval.rank)) {
+			retval = ddr3_rank_mirror(retval);
+		}
+	}
 
 	/* Sanity check that address "fits" in memory geometry */
 	//~ assert(addr == 0);
@@ -257,6 +297,13 @@ static struct DRAMAddr map_ivyhaswell(memaddr_t addr, int geom_flags, const void
 static memaddr_t map_reverse_ivyhaswell(struct DRAMAddr addr, int geom_flags, const void *opts)
 {
 	memaddr_t retval = 0;
+
+	if (opts != NULL) {
+		const struct IntelCntrlOpts *o = (const struct IntelCntrlOpts *)opts;
+		if (o->flags | MEMCTRLOPT_INTEL_RANKMIRROR && BIT(0, addr.rank)) {
+			addr = ddr3_rank_mirror(addr);
+		}
+	}
 
 	retval |= addr.row & LS_BITMASK(16);
 	if (geom_flags & MEMGEOM_RANKSELECT) {
