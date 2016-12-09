@@ -327,9 +327,10 @@ static memaddr_t map_reverse_ivyhaswell(struct DRAMAddr addr, int geom_flags, co
 		retval <<= 6;
 		retval |= (addr.col >> 4) & LS_BITMASK(6);
 		retval <<= 1;
-		retval |= addr.chan & 1;
+		retval |= (addr.chan & 1) ^ BIT(1,retval) ^ BIT(2,retval) ^
+		          BIT(5,retval) ^ BIT(6,retval) ^ BIT(11,retval) ^ BIT(12,retval);
 		retval <<= 4;
-		retval |= addr.col & LS_BITMASK(3);
+		retval |= addr.col & LS_BITMASK(4);
 	} else {
 		retval <<= 10;
 		retval |= addr.col & LS_BITMASK(10);
