@@ -116,10 +116,13 @@ uint32_t fliptbl_lookup(struct FlipTable *ft, struct DRAMAddr addr,
 			}
 		}
 		if (ramses_dramaddr_cmp(addr, s) > 0) {
-			p = idx + 1;
-			right--;
+			p = idx;
 			left = right / 2;
-			right = right / 2 + (right % 2);
+			if (right == 1) {
+				right = 0;
+			} else {
+				right = right / 2 + (right % 2);
+			}
 		} else {
 			right = (left / 2) + (left % 2);
 			left = left / 2;
