@@ -38,7 +38,7 @@ int memfile_pidmem(pid_t pid, int flags)
 
 int memfile_devmem(int flags)
 {
-	return open("/dev/mem", (flags & MEMFILE_WRITABLE) ? O_RDWR : O_RDONLY);
+	return open("/dev/mem", (flags & MEMFILE_WRITABLE) ? O_RDWR|O_SYNC : O_RDONLY);
 }
 
 int memfile_flip_bits(int fd, off_t offset, uint8_t pullup, uint8_t pulldown)
