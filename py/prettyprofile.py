@@ -28,7 +28,7 @@ def prettify_profile_line(line):
             )
     tail = '\t' + '\n\t'.join(
         'Bit flip on row {:6} byte {:4}: expected {} got {}'.format(
-            k.row, x.off, bin(x.exp)[2:].zfill(8), bin(x.got)[2:].zfill(8)
+            k.row, k.col * 8 + x.off, bin(x.exp)[2:].zfill(8), bin(x.got)[2:].zfill(8)
         ) for k, v in run.victims for x in v)
     return head + tail
 

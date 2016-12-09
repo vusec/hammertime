@@ -366,6 +366,7 @@ memaddr_t ramses_map_reverse(enum MemController c, struct DRAMAddr addr, int geo
 
 memaddr_t ramses_map_granularity(enum MemController c, int geom_flags, const void *opts)
 {
+	const struct IntelCntrlOpts *o = (const struct IntelCntrlOpts *)opts;
 	switch (c) {
 		case MEMCTRL_NAIVE_DDR3:
 		case MEMCTRL_NAIVE_DDR4:
@@ -373,7 +374,10 @@ memaddr_t ramses_map_granularity(enum MemController c, int geom_flags, const voi
 		case MEMCTRL_INTEL_SANDY_DDR3:
 			return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 6) : (1 << 13);
 		case MEMCTRL_INTEL_IVYHASWELL_DDR3:
-			return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 7) : (1 << 13);
+			if (o->flags & MEMCTRLOPT_INTEL_RANKMIRROR)
+				return (1 << 6);
+			else
+				return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 7) : (1 << 13);
 		default:
 			return 0x1000; /* We don't know any better; return a common page size */
 	}

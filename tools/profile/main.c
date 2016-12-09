@@ -172,10 +172,10 @@ static void print_entry(FILE *f, struct AddrEntry ent, const char *trail)
 {
 	struct DRAMAddr da = ent.dramaddr;
 	if (VERBOSITY & V_DEBUG) {
-		fprintf(f, "%lx %lx (%1x %1x %1x %1x %4x) ", ent.virtp, ent.len,
-											 da.chan, da.dimm,  da.rank, da.bank, da.row);
+		fprintf(f, "%lx %lx " DRAMADDR_HEX_FMTSTR " ", ent.virtp, ent.len,
+		        da.chan, da.dimm,  da.rank, da.bank, da.row, da.col);
 	} else {
-		fprintf(f, "(%1x %1x %1x %1x %4x) ", da.chan, da.dimm, da.rank, da.bank, da.row);
+		fprintf(f, DRAMADDR_HEX_FMTSTR " ", da.chan, da.dimm, da.rank, da.bank, da.row, da.col);
 	}
 	if (trail) {
 		fputs(trail, f);
@@ -204,7 +204,7 @@ static void check_entry(struct HammerCtx *ctx, struct AddrEntry ent, bool is_tar
 			}
 			fprintf(ctx->outf,
 			        "%04lx|%02x|%02x ",
-			        (ent.dramaddr.col << 3) + idx,
+			        idx,
 			        ((uint8_t *)ent.virtp)[idx],
 			        ((uint8_t *)ctx->pat)[idx % ctx->patlen]);
 			idx++;

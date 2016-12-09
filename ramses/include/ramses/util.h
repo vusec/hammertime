@@ -25,6 +25,10 @@
 
 #include <stdbool.h>
 
+/* For use in printf() */
+#define DRAMADDR_HEX_FMTSTR "(%1x %1x %1x %1x %4x %3x)"
+
+
 static inline int ramses_dramaddr_cmp(struct DRAMAddr a, struct DRAMAddr b)
 {
 	int64_t amag = ((int64_t)a.chan << 56) + ((int64_t)a.dimm << 48) + ((int64_t)a.rank << 40) +
