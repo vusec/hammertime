@@ -27,5 +27,6 @@
 
 /* Setup a probe attached to the entire system */
 int probe_dramload_setup_sys(struct ProbeOutput *pout, struct ProbeControlPanel *pcp);
+int probe_dramload_setup_sys_sample(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period);
 
 #endif /* dram_load_mp.h */

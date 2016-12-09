@@ -42,5 +42,16 @@ int probe_dramload_setup_pid(struct ProbeOutput *pout,
                              struct ProbeControlPanel *pcp,
                              pid_t target_pid,
                              int multitask);
+int probe_dramload_setup_child_sample(struct ProbeOutput *pout,
+                                      struct ProbeControlPanel *pcp,
+                                      uint64_t sample_period,
+                                      char *execpath, char *argv[], char *envp[],
+                                      int multitask,
+                                      pid_t *cpid);
+int probe_dramload_setup_pid_sample(struct ProbeOutput *pout,
+                                    struct ProbeControlPanel *pcp,
+                                    uint64_t sample_period,
+                                    pid_t target_pid,
+                                    int multitask);
 
 #endif /* dram_load.h */

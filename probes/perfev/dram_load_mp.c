@@ -213,7 +213,7 @@ static inline int setup_perfev(struct perf_event_attr *peattr)
 	return ret;
 }
 
-int probe_dramload_setup_sys(struct ProbeOutput *pout, struct ProbeControlPanel *pcp)
+static int setup(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period)
 {
 	int ret;
 	int numcpu = sysconf(_SC_NPROCESSORS_ONLN);
@@ -234,6 +234,9 @@ int probe_dramload_setup_sys(struct ProbeOutput *pout, struct ProbeControlPanel 
 	memset(&peattr, 0, sizeof(peattr));
 	if (setup_perfev(&peattr)) {
 		return DRAMLOAD_ERR_PERFEV;
+	}
+	if (sample_period) {
+		peattr.sample_period = sample_period;
 	}
 	if (perfev_attach_pid(&ppeattr, 1, PERFEV_FLAG_STRICT | PERFEV_FLAG_PERCPU, -1, -1, r) != numcpu) {
 		return DRAMLOAD_ERR_ATTACH;
@@ -306,4 +309,14 @@ int probe_dramload_setup_sys(struct ProbeOutput *pout, struct ProbeControlPanel 
 	if (pc) free(pc);
 	if (st) free(st);
 	return ret;
+}
+
+int probe_dramload_setup_sys(struct ProbeOutput *pout, struct ProbeControlPanel *pcp)
+{
+	return setup(pout, pcp, 0);
+}
+
+int probe_dramload_setup_sys_period(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period)
+{
+	return setup(pout, pcp, sample_period);
 }

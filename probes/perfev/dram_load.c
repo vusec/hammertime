@@ -256,9 +256,9 @@ static inline int setup_state(struct probe_state **state, pid_t target_pid,
 }
 
 
-int probe_dramload_setup_child(struct ProbeOutput *pout, struct ProbeControlPanel *pcp,
-                               char *execpath, char *argv[], char *envp[], int multitask,
-                               pid_t *cpid)
+static int setup_child(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period,
+                       char *execpath, char *argv[], char *envp[], int multitask,
+                       pid_t *cpid)
 {
 	int ret;
 	int startfd;
@@ -278,6 +278,9 @@ int probe_dramload_setup_child(struct ProbeOutput *pout, struct ProbeControlPane
 	memset(ppeattr, 0, sizeof(*ppeattr));
 	if (setup_perfev(&peattr, multitask)) {
 		return DRAMLOAD_ERR_PERFEV;
+	}
+	if (sample_period) {
+		peattr.sample_period = sample_period;
 	}
 
 	cargs.exec_path = execpath;
@@ -319,8 +322,8 @@ int probe_dramload_setup_child(struct ProbeOutput *pout, struct ProbeControlPane
 	return 0;
 }
 
-int probe_dramload_setup_pid(struct ProbeOutput *pout, struct ProbeControlPanel *pcp,
-                             pid_t target_pid, int multitask)
+static int setup_pid(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period,
+                     pid_t target_pid, int multitask)
 {
 	int ret;
 	int numev = multitask ? sysconf(_SC_NPROCESSORS_ONLN) : 1;
@@ -342,6 +345,9 @@ int probe_dramload_setup_pid(struct ProbeOutput *pout, struct ProbeControlPanel 
 	if (setup_perfev(&peattr, multitask)) {
 		return DRAMLOAD_ERR_PERFEV;
 	}
+	if (sample_period) {
+		peattr.sample_period = sample_period;
+	}
 
 	if (perfev_attach_pid(&ppeattr, 1, aflags, target_pid, -1, r) != numev) {
 		return DRAMLOAD_ERR_ATTACH;
@@ -360,4 +366,30 @@ int probe_dramload_setup_pid(struct ProbeOutput *pout, struct ProbeControlPanel 
 	st->pst.st.status |= PROBE_STATUS_STARTED | PROBE_STATUS_TARGET_STARTED |
 	                     PROBE_STATUS_TARGET_RUNNING;
 	return 0;
+}
+
+int probe_dramload_setup_child(struct ProbeOutput *pout, struct ProbeControlPanel *pcp,
+                               char *execpath, char *argv[], char *envp[],
+                               int multitask, pid_t *cpid)
+{
+	return setup_child(pout, pcp, 0, execpath, argv, envp, multitask, cpid);
+}
+
+int probe_dramload_setup_pid(struct ProbeOutput *pout, struct ProbeControlPanel *pcp,
+                             pid_t target_pid, int multitask)
+{
+	return setup_pid(pout, pcp, 0, target_pid, multitask);
+}
+
+int probe_dramload_setup_child_sample(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period,
+                                      char *execpath, char *argv[], char *envp[],
+                                      int multitask, pid_t *cpid)
+{
+	return setup_child(pout, pcp, sample_period, execpath, argv, envp, multitask, cpid);
+}
+
+int probe_dramload_setup_pid_sample(struct ProbeOutput *pout, struct ProbeControlPanel *pcp, uint64_t sample_period,
+                                    pid_t target_pid, int multitask)
+{
+	return setup_pid(pout, pcp, sample_period, target_pid, multitask);
 }
