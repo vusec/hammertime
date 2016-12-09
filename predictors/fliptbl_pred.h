@@ -31,6 +31,7 @@
 #include "fliptable.h"
 
 //~ #define FLIPTBL_PRED_DEBUG
+//~ #define FLIPTBL_PRED_VERBDEBUG
 
 enum HammerMode {
 	HAMMER_SINGLESIDED,

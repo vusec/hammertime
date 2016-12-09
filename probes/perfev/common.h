@@ -38,6 +38,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
+//~ #define PERFEV_COMMON_DEBUG
+
+
 /*
  * Basic state for a generic perfev probe
  * Can be extended by nesting it as the first element in a custom state struct

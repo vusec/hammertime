@@ -38,6 +38,7 @@ struct ftbl_context {
 	enum ExtrapMode extrap;
 
 	#ifdef FLIPTBL_PRED_DEBUG
+	struct DRAMAddr lastmax;
 	uint64_t maxtally;
 	uint64_t total;
 	#endif
@@ -54,6 +55,10 @@ static int ftbl_advtime(void *ctx, int64_t timed, struct PredictorReq *reqs, int
 {
 	struct ftbl_context *c = (struct ftbl_context *)ctx;
 	ramses_vtlb_update_timedelta(c->counts, timed);
+	#ifdef FLIPTBL_PRED_DEBUG
+	fliptbl_pred_print_stats(ctx);
+	c->maxtally = 0;
+	#endif
 	return 0;
 }
 
@@ -69,6 +74,11 @@ static int ftbl_lookup(struct ftbl_context *c, struct DRAMAddr addr,
 	struct Flip *flips;
 	struct DRAMAddr ediff = {0, 0, 0, 0, 0, 0};
 	int nflips = fliptbl_lookup(c->ft, addr, c->extrap, &flips, &ediff);
+	#ifdef FLIPTBL_PRED_DEBUG
+	printf("Lookup: ");
+	printf(DRAMADDR_HEX_FMTSTR, addr.chan, addr.dimm, addr.rank, addr.bank, addr.row, addr.col);
+	printf(" %d\n", nflips);
+	#endif
 	for (int i = 0; i < nflips && i < maxreq; i++) {
 		reqs[i].type = REQ_BITFLIP;
 		reqs[i].tag = 0;
@@ -101,6 +111,13 @@ static int ftbl_logop(void *ctx, struct DRAMAddr addr,
 	#ifdef FLIPTBL_PRED_DEBUG
 	if (tally > c->maxtally) {
 		c->maxtally = tally;
+		#ifdef FLIPTBL_PRED_VERBDEBUG
+		if (ramses_dramaddr_cmp(addr, c->lastmax) != 0) {
+			printf(DRAMADDR_HEX_FMTSTR, addr.chan, addr.dimm, addr.rank, addr.bank, addr.row, addr.col);
+			puts("");
+			c->lastmax = addr;
+		}
+		#endif
 	}
 	#endif
 
@@ -112,19 +129,31 @@ static int ftbl_logop(void *ctx, struct DRAMAddr addr,
 		o = ramses_dramaddr_addrows(addr, -(c->dist));
 		okey = *((uint64_t *)&o);
 		otally = ramses_vtlb_search(c->counts, okey);
-		if (otally != RAMSES_BADADDR && otally >= c->thresh) {
-			ramses_vtlb_update(c->counts, okey, 0);
-			ramses_vtlb_update(c->counts, key, 0);
-			return ftbl_lookup(c, o, reqs, maxreq);
+		if (otally != RAMSES_BADADDR) {
+			if (otally >= c->thresh) {
+				ramses_vtlb_update(c->counts, okey, 0);
+				ramses_vtlb_update(c->counts, key, 0);
+				return ftbl_lookup(c, o, reqs, maxreq);
+			} else {
+				#ifdef FLIPTBL_PRED_VERBDEBUG
+				printf(">%ld<\n", otally);
+				#endif
+			}
 		}
 		/* See if upper row is also targeted */
 		o = ramses_dramaddr_addrows(addr, c->dist);
 		okey = *((uint64_t *)&o);
 		otally = ramses_vtlb_search(c->counts, okey);
-		if (otally != RAMSES_BADADDR && otally >= c->thresh) {
-			ramses_vtlb_update(c->counts, okey, 0);
-			ramses_vtlb_update(c->counts, key, 0);
-			return ftbl_lookup(c, addr, reqs, maxreq);
+		if (otally != RAMSES_BADADDR) {
+			if (otally >= c->thresh) {
+				ramses_vtlb_update(c->counts, okey, 0);
+				ramses_vtlb_update(c->counts, key, 0);
+				return ftbl_lookup(c, addr, reqs, maxreq);
+			} else {
+				#ifdef FLIPTBL_PRED_VERBDEBUG
+				printf(">%ld<\n", otally);
+				#endif
+			}
 		}
 	}
 

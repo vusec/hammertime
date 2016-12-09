@@ -65,12 +65,16 @@ void perfevprobe_sample_cb(int64_t time,
 
 	uint64_t dist = mmap->head - mmap->old_head;
 	//~ printf("%6lx\n", dist);
+	#ifdef PERFEV_COMMON_DEBUG
 	if (dist > sz/2) {
-		//~ puts("PERF BUF WARN!");
+		puts("PERF BUF WARN!");
 	}
+	#endif
 	if (dist > sz) {
-		//~ puts("PERF BUF LOSS!!!");
-		//~ printf("OH: %10lx; CH: %10lx; D: %10lx\n", mmap->old_head, mmap->head, mmap->head - mmap->old_head);
+		#ifdef PERFEV_COMMON_DEBUG
+		puts("PERF BUF LOSS!!!");
+		printf("OH: %10lx; CH: %10lx; D: %10lx\n", mmap->old_head, mmap->head, mmap->head - mmap->old_head);
+		#endif
 		return;
 	}
 
@@ -78,8 +82,10 @@ void perfevprobe_sample_cb(int64_t time,
 		pr = (struct perf_event_header *)(dp + (cur % sz));
 		if ((uint32_t)pr->type > PERF_RECORD_MAX) {
 			/* Rubbish data; most likely de-synced; abort */
-			//~ printf("C: %ld; S: %ld; ", (cur % sz), sz);
-			//~ printf("PS: %d; T: %d\n", pr->size, (uint32_t)pr->type);
+			#ifdef PERFEV_COMMON_DEBUG
+			printf("C: %ld; S: %ld; ", (cur % sz), sz);
+			printf("PS: %d; T: %d\n", pr->size, (uint32_t)pr->type);
+			#endif
 			return;
 		}
 		int diff = ((cur % sz) + pr->size) - sz;
