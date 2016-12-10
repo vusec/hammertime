@@ -373,9 +373,12 @@ memaddr_t ramses_map_granularity(enum MemController c, int geom_flags, const voi
 		case MEMCTRL_NAIVE_DDR4:
 			return (1 << 13);
 		case MEMCTRL_INTEL_SANDY_DDR3:
-			return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 6) : (1 << 13);
+			if (o != NULL && o->flags & MEMCTRLOPT_INTEL_RANKMIRROR)
+				return (1 << 6);
+			else
+				return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 6) : (1 << 13);
 		case MEMCTRL_INTEL_IVYHASWELL_DDR3:
-			if (o->flags & MEMCTRLOPT_INTEL_RANKMIRROR)
+			if (o != NULL && o->flags & MEMCTRLOPT_INTEL_RANKMIRROR)
 				return (1 << 6);
 			else
 				return (geom_flags & MEMGEOM_CHANSELECT) ? (1 << 7) : (1 << 13);
