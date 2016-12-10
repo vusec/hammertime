@@ -2,5 +2,6 @@ cntrl intel_haswell
 route x86_generic
 remap r3x21
 route_opts 3,3743416320,8589934592
+cntrl_opts rank_mirror
 chan
 rank
