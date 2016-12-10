@@ -50,9 +50,9 @@ Output format
 All output numbers and addresses are in hexadecimal format.
 
 DRAM addresses are in the following format (sans quotes):
-`(<channel> <dimm> <rank> <bank> <row>)'
+`(<channel> <dimm> <rank> <bank> <row> <col>)'
 or
-`<virt_p> <length> (<channel> <dimm> <rank> <bank> <row>)'
+`<virt_p> <length> (<channel> <dimm> <rank> <bank> <row> <col>)'
 if -vv is specified.
 
 Output consists of hammer test entries (one per line) in the format:
@@ -63,6 +63,6 @@ The same DRAM_VICTIM* address may appear more than once within a hammer test ent
 
 FLIP* entries describe bitflips within a physical row (i.e. channel-dimm-rank-bank-row tuple).
 Format is OOOO|VV|EE, where:
-OOOO --- byte offset into the physical row of the bitflip (hex; <= row size (usually 0x2000 bytes); fixed width 4)
+OOOO --- byte offset of the bitflip relative to DRAM_VICTIM* (hex; <= row size (usually 0x2000 bytes); fixed width 4)
 VV --- byte value after bit flip (hex; fixed width 2)
 EE --- byte expected according to fill pattern (hex; fixed width 2)
