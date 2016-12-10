@@ -15,7 +15,7 @@ Dependencies:
 Running
 -------
 
-Usage: profile -s <buffer_size> [-hvdpwalHi] [-O<1sd>] [-W <window_radius>] [-D <target_distance>] [-I <refresh_intervals>] [-P <victim_pattern>][-T <target_pattern>] [-g <pressure_gran>] MSYS_FILE [OUT_FILE]
+Usage: profile -s <buffer_size> [-hvdpwalHi] [-O<2sd>] [-W <window_radius>] [-D <target_distance>] [-I <refresh_intervals>] [-P <victim_pattern>][-T <target_pattern>] [-g <pressure_gran>] MSYS_FILE [OUT_FILE]
 
 Numeric arguments are assumed to be decimal, unless prefixed by `0' or `0x' in which case octal and, hexadecimal is assumed, respectively.
 Options:
