@@ -60,7 +60,7 @@ The output may seem a bit cryptic. To remedy this, use the prettifying script:
 as a shell pipeline or
 
 ```
-tools/profile/profile -s 256m spam.msys myprof.res
+profile/profile 256m spam.msys myprof.res
 py/prettyprofile.py myprof.res
 ```
 
