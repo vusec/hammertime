@@ -2,14 +2,6 @@
 
 **Hammertime**: a software suite for testing, profiling and simulating the Rowhammer DRAM defect, built on top of the [RAMSES address translation library](https://github.com/vusec/ramses).
 
-### Publication ###
-
-A paper describing the insights and results of Hammertime has been accepted at RAID 2018: "Defeating Software Mitigations against Rowhammer: A Surgical Precision Hammer". Tatar, A.; Razavi, K.; Bos, H.; Giuffrida, C.
-
-The present code is an early prototype and does not reflect the final quality of the code which will be published alongside the paper.
-More updates to follow!
-
-
 ### What does this project contain? ###
 
 Hammertime contains two major components:
