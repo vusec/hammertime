@@ -1,4 +1,0 @@
-cntrl intel_haswell
-route x86_generic
-remap r3x21
-route_opts 3,3743416320,4294967296

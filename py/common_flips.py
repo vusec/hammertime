@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 # Copyright (c) 2016 Andrei Tatar
+# Copyright (c) 2018 Vrije Universiteit Amsterdam
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# This program is licensed under the GPL2+.
+
 
 import sys
 import argparse
 
-from hammertime import profile
+from hammertime import fliptable
 
 
 def _comm_reduce(pfiles):
-    ft = profile.profile2fliptable(pfiles[0])
+    ft = fliptable.Fliptable.load_file(pfiles[0])
     for pfile in pfiles[1:]:
-        ft = ft.diff(profile.profile2fliptable(pfile))[1]
+        ft = ft.diff(fliptable.Fliptable.load_file(pfile)).common
     return ft
 
 if __name__ == '__main__':
@@ -39,5 +30,5 @@ if __name__ == '__main__':
         outf = sys.stdout
     else:
         outf = open(args.output, 'w')
-    print(profile.fliptable2profile(_comm_reduce(args.profiles)), file=outf)
+    print(_comm_reduce(args.profiles), file=outf)
     outf.close()

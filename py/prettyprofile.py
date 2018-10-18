@@ -1,35 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 # Copyright (c) 2016 Andrei Tatar
+# Copyright (c) 2018 Vrije Universiteit Amsterdam
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# This program is licensed under the GPL2+.
+
 
 import sys
 
-from hammertime import profile
+from hammertime import fliptable
 
 
 def prettify_profile_line(line):
-    run = profile.decode_line(line)
-    head = ('Hammering row{} '.format('s' if len(run.targets) > 1 else '') +
-            ', '.join(str(x.row) for x in run.targets) +
-            ' on bank {0.bank}, rank {0.rank}, DIMM {0.dimm}, channel {0.chan}\n'.format(run.targets[0])
+    atk = fliptable.Attack.decode_line(line)
+    head = ('Hammering row{} '.format('s' if len(atk.targets) > 1 else '') +
+            ', '.join(str(x.row) for x in atk.targets) +
+            ' on bank {0.bank}, rank {0.rank}, DIMM {0.dimm}, channel {0.chan}\n'.format(atk.targets[0])
             )
     tail = '\t' + '\n\t'.join(
-        'Bit flip on row {:6} byte {:4}: expected {} got {}'.format(
-            k.row, k.col * 8 + x.off, bin(x.exp)[2:].zfill(8), bin(x.got)[2:].zfill(8)
-        ) for k, v in run.victims for x in v)
+        'Bit flip on row {:6}, column {:4}, bit {:2}: {}'.format(
+            x.addr.row, x.addr.col, x.bit, '0 -> 1' if x.pullup else '1 -> 0'
+        ) for x in atk)
     return head + tail
 
 

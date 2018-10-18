@@ -1,0 +1,77 @@
+Hammertime `profile' --- a geometry-aware Rowhammer memory profiler
+===================================================================
+
+Building
+--------
+
+Dependencies:
+ - POSIX compatible OS and libc (GNU/Linux recommended)
+ - RAMSES
+
+* run `make'
+* (optionally) run `make cap' as root to set the required capabilities on the binary, allowing it to run as a normal user
+
+
+Running
+-------
+
+Usage: profile [-hvdHitL] [-a ALIGNMENT] [-W WIDTH] [-D DISTANCE] [-I REFRESH_INTERVALS] [-R REFRESH_DURATION_US] [-C CALIBRATION_OVERRIDE] [-P PRESSURE_OPTIONS] [-T TARGET_PATTERN] [-V VICTIM_PATTERN] [-X BASE] [-K HAMMER_KERNEL] [--incomplete] [--single|--double] SIZE (-m MSYS_STRING | MSYS_FILE) [OUT_FILE]
+
+Numeric arguments are assumed to be decimal, unless prefixed by `0' or `0x' in which case octal or hexadecimal is assumed, respectively.
+Positional arguments:
+	SIZE		(Required) use SIZE bytes as the profiling buffer; can have 'K', 'M', 'G' or 'T' suffix (for KiB, MiB, GiB or TiB)
+	MSYS_FILE	(Required if not using -m) path to file describing memory system. Use '-' to read from stdin
+	OUT_FILE	if provided, will be used for output instead of stdout
+Options:
+	-m MSYS_STRING, --msys MSYS_STRING	use MSYS_STRING as memory description instead of reading from file
+	-h, --help	print this help and exit
+	-v, --verbose	be more verbose. Can be specified multiple times to increase verbosity
+	-d, --dry-run	allocate all buffers and perform calibrations, but return before doing any hammering
+	-H, --huge	(Recommended) allocate buffers using hugetlb pages. Specify twice to force request 1GB pages
+	-i, --invert-patterns	also hammer with bit-inverted data patterns
+	-t, --thp	advise the system to use Transparent Huge Pages for the hammer buffer
+	-L, --no-lock	do not lock hammer buffer to RAM. Not recommended, as it can negatively affect accuracy; use only to get around ulimits
+	-a ALIGNMENT, --align ALIGNMENT	allocate hammer buffer aligned at ALIGNMENT boundaries in virtual address space
+	-W WIDTH, --width=WIDTH	check an additional WIDTH rows on each side of the aggressor row(s). Default: 1 (single-sided), 0 (double-sided)
+	-D DIST, --dist=DIST	set distance between dual-sided hammer targets to DIST rows. Default: 1, ignored when doing single-sided rowhammer
+	-I COUNT, --intervals=COUNT	hammer each row set for COUNT refresh intervals. Default: 3
+	-R NUM, --refresh-interval=NUM	assume a DRAM refresh interval of NUM milliseconds. Default: 64
+	-C CAL, --calibration=CAL	skip calibration and assume CAL hammers per refresh interval
+	-P PRES, --pressure=PRES	create pressure threads to simulate memory contention. PRES consists of one or more one-character pressure TYPE selectors, each optionally followed by a decimal SHIFT value. If SHIFT is missing it is assumed to be 0.
+		TYPEs:
+			's' - sequential reads using a 2^(SHIFT) increment
+			'S' - sequential writes using a 2^(SHIFT) increment
+	-V PATTERN, --victim-pattern=PATTERN	set victim fill pattern to PATTERN. Expects a hexadecimal number of even length representing fill bytes. Default 'ff'
+	-T PATTERN, --target-pattern=PATTERN	set target fill pattern to PATTERN. Same rules apply as for -V. Default '00'
+	-X BASE, --trans-heur=BASE	heuristically translate virtual to physical addresses by taking the lower order bits of the address and adding them to BASE. SIZE is rounded down to nearest power of two, and the hammer buffer is size-aligned
+	-K KERN, --hammer-kernel=KERN	use KERN as main loop for performing rowhammer. Default ld_flush if available, ld otherwise
+		KERNs:
+			'ld' - repeated loads
+		on x86:
+			'ld_flush' - repeated loads preceded by cache flushing with clflush
+			'ld_flush_mfence' - repeated loads preceded by cache flushing and an mfence
+	--incomplete	also hammer on incompletely mapped rows (WARNING: may cause memory corruption in other processes)
+	--single | --double	perform either single-sided or double-sided rowhammer, respecively. Default: double-sided
+
+
+Output format
+-------------
+All output numbers and addresses are in hexadecimal format.
+
+DRAM addresses are in the following format (sans quotes):
+`(<channel> <dimm> <rank> <bank> <row> <col>)'
+or
+`<addr> (<channel> <dimm> <rank> <bank> <row> <col>)'
+if -vv is specified.
+
+Output consists of hammer test entries (one per line) in the format:
+DRAM_TARGET1 [DRAM_TARGET2 ...] : DRAM_VICTIM1 FLIP1 [FLIP2 ...] [DRAM_VICTIM2 FLIP1 [FLIP2 ...] ...]
+
+DRAM_TARGET* and DRAM_VICTIM* are DRAM addresses, as described above.
+The same DRAM_VICTIM* address may appear more than once within a hammer test entry.
+
+FLIP* entries describe bitflips within a physical row (i.e. channel-dimm-rank-bank-row tuple).
+Format is OOOO|VV|EE, where:
+OOOO --- byte offset of the bitflip relative to DRAM_VICTIM* (hex; fixed width 4)
+VV --- byte value after bit flip (hex; fixed width 2)
+EE --- byte expected according to fill pattern (hex; fixed width 2)

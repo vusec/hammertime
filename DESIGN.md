@@ -1,3 +1,0 @@
-# Hammertime design #
-
-Coming soon!
